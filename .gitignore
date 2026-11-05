@@ -1,0 +1,22 @@
+## Visual Studio cache and temporary files
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+## Build outputs
+[Bb]in/
+[Oo]bj/
+
+## NuGet packages
+*.nupkg
+packages/
+!packages/build/
+
+## SQL Server LocalDB database files created locally during debugging (if any)
+App_Data/*.mdf
+App_Data/*.ldf
+
+## Node/Frontend build artifacts (if any future use)
+node_modules/
