@@ -101,3 +101,4 @@ using (SqlConnection conn = ConnectionFactory.CreateConnection())
 }
 ```
 *Because `SqlConnection` implements `IDisposable`, the `using` block guarantees that the connection is closed and returned to the connection pool even if an unhandled exception occurs.*
+

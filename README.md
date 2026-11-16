@@ -93,3 +93,4 @@ Full documentation is located in the `Documentation/` folder:
 - [Project Structure Guide](Documentation/PROJECT-STRUCTURE.md)
 - [Visual Studio Execution Guide](Documentation/VISUAL-STUDIO-GUIDE.md)
 - [Git & Team Workflow](Documentation/GITHUB-WORKFLOW.md)
+

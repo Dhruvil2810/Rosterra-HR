@@ -20,3 +20,4 @@ App_Data/*.ldf
 
 ## Node/Frontend build artifacts (if any future use)
 node_modules/
+

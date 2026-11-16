@@ -76,3 +76,4 @@ If your teammate shares a standalone `.cs` or `.sql` file over WhatsApp:
    git commit -m "Integrate Department model contributed by teammate"
    ```
 7. Merge into `main` only after full build verification.
+

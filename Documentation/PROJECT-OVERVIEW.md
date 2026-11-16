@@ -54,3 +54,4 @@ The 10-day initial development cycle focuses on:
   - Entity Framework automates SQL generation, which hides connection lifecycles, SQL parameterization, and transaction details from students. ADO.NET provides complete, explicit control over every query, connection, and data reader.
 - **Why SQL Server LocalDB?**
   - It runs on-demand as a user-level process with the exact same SQL engine as enterprise SQL Server, without requiring a permanent background service.
+

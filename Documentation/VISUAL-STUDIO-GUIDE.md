@@ -37,3 +37,4 @@ This reference explains how to open, build, run, and debug Rosterra HR on any Wi
    - `Shift + F11`: Step Out.
    - `F5`: Continue running.
 7. Hover over variables to inspect their runtime values or check the **Locals** and **Watch** windows.
+
