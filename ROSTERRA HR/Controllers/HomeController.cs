@@ -1,17 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace ROSTERRA_HR.Controllers
 {
+    /// <summary>
+    /// Default entry controller. Directs traffic to Login or Dashboard.
+    /// </summary>
     public class HomeController : Controller
     {
-        // GET: Home
+        // GET: / or /Home/Index
         public ActionResult Index()
         {
-            return View();
+            if (Session["Role"] != null && string.Equals(Session["Role"].ToString(), "HR", StringComparison.OrdinalIgnoreCase))
+            {
+                return RedirectToAction("Index", "Dashboard");
+            }
+
+            return RedirectToAction("Login", "Account");
         }
     }
 }
