@@ -24,7 +24,16 @@
                         @if (Session["Role"] != null && string.Equals(Session["Role"].ToString(), "HR", StringComparison.OrdinalIgnoreCase))
                         {
                             <li class="nav-item">
-                                <a class="nav-link active" aria-current="page" href="@Url.Action("Index", "Dashboard")">Dashboard</a>
+                                <a class="nav-link" href="@Url.Action("Index", "Dashboard")">Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("Index", "Employee")">Employees</a>
+                            </li>
+                        }
+                        else if (Session["Role"] != null && string.Equals(Session["Role"].ToString(), "Employee", StringComparison.OrdinalIgnoreCase))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("Index", "EmployeeDashboard")">My Portal</a>
                             </li>
                         }
                     </ul>

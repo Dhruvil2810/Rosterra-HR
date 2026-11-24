@@ -1,0 +1,93 @@
+@model ROSTERRA_HR.Models.Employee
+
+@{
+    ViewBag.Title = "Employee Details";
+}
+
+<div class="container py-2">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center pb-3 mb-4 border-bottom">
+                <div>
+                    <h2 class="h3 fw-bold mb-1 text-dark">Employee Record</h2>
+                    <p class="text-muted mb-0 small">Surrogate ID: #@Model.EmployeeId &bull; Linked Account ID: #@Model.UserId</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="@Url.Action("Edit", "Employee", new { id = Model.EmployeeId })" class="btn btn-outline-primary btn-sm">
+                        &#9998; Edit
+                    </a>
+                    <a href="@Url.Action("Index", "Employee")" class="btn btn-outline-secondary btn-sm">
+                        &larr; Back to Directory
+                    </a>
+                </div>
+            </div>
+
+            <!-- Details Card -->
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold text-dark">@Model.FullName</h5>
+                    @if (Model.IsActive)
+                    {
+                        <span class="badge bg-success">Active Status</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Inactive / Suspended</span>
+                    }
+                </div>
+                <div class="card-body p-4">
+                    <div class="row mb-3">
+                        <div class="col-sm-4 text-muted">First Name</div>
+                        <div class="col-sm-8 fw-semibold">@Model.FirstName</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 text-muted">Last Name</div>
+                        <div class="col-sm-8 fw-semibold">@Model.LastName</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 text-muted">Corporate Email</div>
+                        <div class="col-sm-8"><a href="mailto:@Model.Email">@Model.Email</a></div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 text-muted">Contact Phone</div>
+                        <div class="col-sm-8">@(string.IsNullOrWhiteSpace(Model.PhoneNumber) ? "Not provided" : Model.PhoneNumber)</div>
+                    </div>
+                    <hr class="my-3 text-muted" />
+                    <div class="row mb-3">
+                        <div class="col-sm-4 text-muted">Department</div>
+                        <div class="col-sm-8"><span class="badge bg-light text-dark border">@Model.Department</span></div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 text-muted">Position / Role</div>
+                        <div class="col-sm-8 fw-semibold">@Model.Position</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 text-muted">Current Salary</div>
+                        <div class="col-sm-8 fw-bold text-dark">$@Model.Salary.ToString("N2")</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 text-muted">Date of Hire</div>
+                        <div class="col-sm-8">@Model.HireDate.ToString("MMMM dd, yyyy")</div>
+                    </div>
+                    <hr class="my-3 text-muted" />
+                    <div class="row mb-3">
+                        <div class="col-sm-4 text-muted">Portal Login Username</div>
+                        <div class="col-sm-8"><code>@Model.Username</code></div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 text-muted">Record Created (UTC)</div>
+                        <div class="col-sm-8 small text-muted">@Model.CreatedAtUtc.ToString("u")</div>
+                    </div>
+                    @if (Model.UpdatedAtUtc.HasValue)
+                    {
+                        <div class="row mb-3">
+                            <div class="col-sm-4 text-muted">Last Updated (UTC)</div>
+                            <div class="col-sm-8 small text-muted">@Model.UpdatedAtUtc.Value.ToString("u")</div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

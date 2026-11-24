@@ -31,10 +31,18 @@ namespace ROSTERRA_HR.Controllers
         [HttpGet]
         public ActionResult Login()
         {
-            // If already logged in with HR role, redirect directly to Dashboard
-            if (Session["Role"] != null && string.Equals(Session["Role"].ToString(), "HR", StringComparison.OrdinalIgnoreCase))
+            // If already logged in, redirect to the appropriate dashboard
+            if (Session["Role"] != null)
             {
-                return RedirectToAction("Index", "Dashboard");
+                string role = Session["Role"].ToString();
+                if (string.Equals(role, "HR", StringComparison.OrdinalIgnoreCase))
+                {
+                    return Redirect("~/Dashboard");
+                }
+                if (string.Equals(role, "Employee", StringComparison.OrdinalIgnoreCase))
+                {
+                    return Redirect("~/EmployeeDashboard");
+                }
             }
 
             return View(new LoginViewModel());
@@ -67,12 +75,6 @@ namespace ROSTERRA_HR.Controllers
                     return View(model);
                 }
 
-                if (!string.Equals(user.Role, "HR", StringComparison.OrdinalIgnoreCase))
-                {
-                    ModelState.AddModelError(string.Empty, "Access denied. Only HR administrators are permitted.");
-                    return View(model);
-                }
-
                 // Update last login timestamp
                 _userRepository.UpdateLastLogin(user.UserId);
 
@@ -82,12 +84,21 @@ namespace ROSTERRA_HR.Controllers
                 Session["Username"] = user.Username;
                 Session["Role"] = user.Role;
 
-                return Redirect("~/Dashboard");
+                // Role-based post-login redirection
+                if (string.Equals(user.Role, "HR", StringComparison.OrdinalIgnoreCase))
+                {
+                    return Redirect("~/Dashboard");
+                }
+                else if (string.Equals(user.Role, "Employee", StringComparison.OrdinalIgnoreCase))
+                {
+                    return Redirect("~/EmployeeDashboard");
+                }
+
+                return Redirect("~/Account/Login");
             }
             catch (Exception ex)
             {
-                // In production/logging phase this will be logged to ApplicationErrorLogs
-                ModelState.AddModelError(string.Empty, "An unexpected error occurred during login. Please try again. " + ex.Message);
+                ModelState.AddModelError(string.Empty, "An unexpected error occurred during login. " + ex.Message);
                 return View(model);
             }
         }

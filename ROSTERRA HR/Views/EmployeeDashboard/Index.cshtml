@@ -1,0 +1,109 @@
+@model ROSTERRA_HR.Models.Employee
+
+@{
+    ViewBag.Title = "Employee Portal";
+}
+
+<div class="container py-2">
+    <!-- Header Banner -->
+    <div class="d-flex justify-content-between align-items-center pb-3 mb-4 border-bottom">
+        <div>
+            <h2 class="h3 fw-bold mb-1 text-dark">Welcome, @(Model?.FullName ?? "Employee")</h2>
+            <p class="text-muted mb-0 small">Employee Self-Service Portal &bull; Personal Profile</p>
+        </div>
+        <div>
+            <a href="@Url.Action("Logout", "Account")" class="btn btn-outline-danger">
+                &#x21FD; Logout
+            </a>
+        </div>
+    </div>
+
+    @if (Model == null)
+    {
+        <div class="alert alert-warning">
+            Your employee record could not be loaded. Please contact Human Resources.
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            <!-- Profile Overview Card -->
+            <div class="col-md-4">
+                <div class="card shadow-sm border-0 text-center p-4">
+                    <div class="mx-auto mb-3 rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center" style="width: 90px; height: 90px;">
+                        <span class="fs-1 text-primary">&#128100;</span>
+                    </div>
+                    <h4 class="fw-bold mb-1">@Model.FullName</h4>
+                    <p class="text-muted mb-2">@Model.Position</p>
+                    <span class="badge @(Model.IsActive ? "bg-success" : "bg-danger") mx-auto px-3 py-2">
+                        @(Model.IsActive ? "Active Employee" : "Account Suspended")
+                    </span>
+
+                    <hr class="my-3" />
+
+                    <div class="text-start small text-muted">
+                        <div class="mb-2"><strong>Employee ID:</strong> #@Model.EmployeeId</div>
+                        <div class="mb-2"><strong>Account Username:</strong> <code>@Model.Username</code></div>
+                        <div class="mb-2"><strong>Hire Date:</strong> @Model.HireDate.ToString("MMMM dd, yyyy")</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Details Card -->
+            <div class="col-md-8">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0 fw-bold text-secondary">Profile Information</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row mb-3">
+                            <div class="col-sm-4 text-muted">Full Name</div>
+                            <div class="col-sm-8 fw-semibold">@Model.FullName</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-4 text-muted">Corporate Email</div>
+                            <div class="col-sm-8">
+                                <a href="mailto:@Model.Email">@Model.Email</a>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-4 text-muted">Contact Phone</div>
+                            <div class="col-sm-8">@(string.IsNullOrWhiteSpace(Model.PhoneNumber) ? "Not provided" : Model.PhoneNumber)</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-4 text-muted">Department</div>
+                            <div class="col-sm-8"><span class="badge bg-light text-dark border">@Model.Department</span></div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-4 text-muted">Designation</div>
+                            <div class="col-sm-8">@Model.Position</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-4 text-muted">Account Status</div>
+                            <div class="col-sm-8">
+                                @if (Model.IsActive)
+                                {
+                                    <span class="text-success fw-bold">&#10004; Active / Good Standing</span>
+                                }
+                                else
+                                {
+                                    <span class="text-danger fw-bold">&#10008; Inactive</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Future Self-Service Modules Notice -->
+                <div class="card shadow-sm border-0 mt-4">
+                    <div class="card-body p-4 bg-light">
+                        <h6 class="fw-bold text-dark mb-2">Self-Service Modules (Coming Soon)</h6>
+                        <p class="text-muted small mb-0">
+                            Upcoming features will include self-service leave requests, timesheets &amp; attendance recording, and payslip generation.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

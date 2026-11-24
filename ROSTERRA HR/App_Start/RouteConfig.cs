@@ -20,9 +20,15 @@ namespace ROSTERRA_HR
             );
 
             routes.MapRoute(
+                name: "EmployeeDashboardRoute",
+                url: "EmployeeDashboard",
+                defaults: new { controller = "EmployeeDashboard", action = "Index" }
+            );
+
+            routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Account", action = "Login", id = UrlParameter.Optional }
+                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
             );
         }
     }

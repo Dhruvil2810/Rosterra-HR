@@ -1,0 +1,105 @@
+@model ROSTERRA_HR.Models.EmployeeEditViewModel
+
+@{
+    ViewBag.Title = "Edit Employee";
+}
+
+<div class="container py-2">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center pb-3 mb-4 border-bottom">
+                <div>
+                    <h2 class="h3 fw-bold mb-1 text-dark">Edit Employee Details</h2>
+                    <p class="text-muted mb-0 small">Updating profile for: <strong>@Model.FirstName @Model.LastName</strong> (Username: <code>@Model.Username</code>)</p>
+                </div>
+                <a href="@Url.Action("Index", "Employee")" class="btn btn-outline-secondary btn-sm">
+                    &larr; Back to Directory
+                </a>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    @using (Html.BeginForm("Edit", "Employee", FormMethod.Post, new { @class = "needs-validation", role = "form" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(m => m.EmployeeId)
+                        @Html.HiddenFor(m => m.UserId)
+                        @Html.HiddenFor(m => m.Username)
+
+                        if (!ViewData.ModelState.IsValid && ViewData.ModelState[string.Empty] != null)
+                        {
+                            @Html.ValidationSummary(true, "", new { @class = "alert alert-danger py-2 small" })
+                        }
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                @Html.LabelFor(m => m.FirstName, new { @class = "form-label" })
+                                @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(m => m.FirstName, "", new { @class = "text-danger small mt-1 d-block" })
+                            </div>
+                            <div class="col-md-6">
+                                @Html.LabelFor(m => m.LastName, new { @class = "form-label" })
+                                @Html.TextBoxFor(m => m.LastName, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(m => m.LastName, "", new { @class = "text-danger small mt-1 d-block" })
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                @Html.LabelFor(m => m.Email, new { @class = "form-label" })
+                                @Html.TextBoxFor(m => m.Email, new { @class = "form-control", type = "email" })
+                                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger small mt-1 d-block" })
+                            </div>
+                            <div class="col-md-6">
+                                @Html.LabelFor(m => m.PhoneNumber, new { @class = "form-label" })
+                                @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(m => m.PhoneNumber, "", new { @class = "text-danger small mt-1 d-block" })
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                @Html.LabelFor(m => m.Department, new { @class = "form-label" })
+                                <select name="Department" class="form-select">
+                                    <option value="Engineering" selected="@(Model.Department == "Engineering")">Engineering</option>
+                                    <option value="Human Resources" selected="@(Model.Department == "Human Resources")">Human Resources</option>
+                                    <option value="Finance" selected="@(Model.Department == "Finance")">Finance</option>
+                                    <option value="Sales & Marketing" selected="@(Model.Department == "Sales & Marketing")">Sales & Marketing</option>
+                                    <option value="Operations" selected="@(Model.Department == "Operations")">Operations</option>
+                                </select>
+                                @Html.ValidationMessageFor(m => m.Department, "", new { @class = "text-danger small mt-1 d-block" })
+                            </div>
+                            <div class="col-md-6">
+                                @Html.LabelFor(m => m.Position, new { @class = "form-label" })
+                                @Html.TextBoxFor(m => m.Position, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(m => m.Position, "", new { @class = "text-danger small mt-1 d-block" })
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                @Html.LabelFor(m => m.Salary, new { @class = "form-label" })
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    @Html.TextBoxFor(m => m.Salary, new { @class = "form-control", type = "number", step = "0.01" })
+                                </div>
+                                @Html.ValidationMessageFor(m => m.Salary, "", new { @class = "text-danger small mt-1 d-block" })
+                            </div>
+                            <div class="col-md-6">
+                                @Html.LabelFor(m => m.HireDate, new { @class = "form-label" })
+                                @Html.TextBoxFor(m => m.HireDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                                @Html.ValidationMessageFor(m => m.HireDate, "", new { @class = "text-danger small mt-1 d-block" })
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="@Url.Action("Index", "Employee")" class="btn btn-outline-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary px-4 shadow-sm">Save Changes</button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

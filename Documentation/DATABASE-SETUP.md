@@ -25,6 +25,11 @@ sqlcmd -S "(localdb)\MSSQLLocalDB" -i "ROSTERRA HR\Scripts\Database\002_CreateUs
 sqlcmd -S "(localdb)\MSSQLLocalDB" -i "ROSTERRA HR\Scripts\Database\003_SeedInitialHRAccount.sql"
 ```
 
+### Step 4: Create Employees Table (Phase 2)
+```cmd
+sqlcmd -S "(localdb)\MSSQLLocalDB" -i "ROSTERRA HR\Scripts\Database\004_CreateEmployeesTable.sql"
+```
+
 ---
 
 ## 3. Connection String Configuration
@@ -40,8 +45,6 @@ Located in `ROSTERRA HR/Web.config`:
 
 ---
 
-## 4. Default Seeded Credentials
-- **Username**: `hradmin`
-- **Password**: `HR@2026`
-- **Role**: `HR`
-- **Password Security**: PBKDF2 HMAC-SHA256 (100,000 iterations, 128-bit salt)
+## 4. Default Seeded Accounts
+- **HR Administrator**: `hradmin` / `HR@2026`
+- **Employee Accounts**: Created through the HR Portal at `/Employee/Create` (each employee receives an automated user account with role `'Employee'`).

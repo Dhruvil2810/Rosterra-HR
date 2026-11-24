@@ -96,15 +96,22 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
+    <Compile Include="Controllers\EmployeeController.cs" />
+    <Compile Include="Controllers\EmployeeDashboardController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Data\ConnectionFactory.cs" />
+    <Compile Include="Filters\AuthorizeEmployeeAttribute.cs" />
     <Compile Include="Filters\AuthorizeHRAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Employee.cs" />
+    <Compile Include="Models\EmployeeCreateViewModel.cs" />
+    <Compile Include="Models\EmployeeEditViewModel.cs" />
     <Compile Include="Models\LoginViewModel.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\EmployeeRepository.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
     <Compile Include="Security\PasswordHasher.cs" />
   </ItemGroup>
@@ -116,6 +123,11 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Dashboard\Index.cshtml" />
+    <Content Include="Views\Employee\Index.cshtml" />
+    <Content Include="Views\Employee\Create.cshtml" />
+    <Content Include="Views\Employee\Edit.cshtml" />
+    <Content Include="Views\Employee\Details.cshtml" />
+    <Content Include="Views\EmployeeDashboard\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
