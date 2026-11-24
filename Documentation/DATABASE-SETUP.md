@@ -1,65 +1,47 @@
-# Database Setup Guide — Rosterra HR
-
-This document explains how any team member can reproduce the `RosterraHRDB` database on their machine using SQL Server LocalDB.
-
----
+# Database Setup & Initialization — Rosterra HR
 
 ## 1. Prerequisites
-- SQL Server LocalDB installed (included with Visual Studio SSDT / Data storage and processing workload).
-- Instance name: `(localdb)\MSSQLLocalDB`.
+- **Visual Studio 2022** with SQL Server Data Tools / LocalDB installed.
+- **SQL Server LocalDB**: Instance `(localdb)\MSSQLLocalDB`.
 
-Verify LocalDB is running:
-```powershell
-sqllocaldb start MSSQLLocalDB
-sqllocaldb info MSSQLLocalDB
+---
+
+## 2. Automated Script Execution
+
+Run the versioned SQL scripts in numerical order using `sqlcmd` from the terminal or Visual Studio SQL Server Object Explorer:
+
+### Step 1: Create Database
+```cmd
+sqlcmd -S "(localdb)\MSSQLLocalDB" -i "ROSTERRA HR\Scripts\Database\001_CreateDatabase.sql"
+```
+
+### Step 2: Create Users Table
+```cmd
+sqlcmd -S "(localdb)\MSSQLLocalDB" -i "ROSTERRA HR\Scripts\Database\002_CreateUsersTable.sql"
+```
+
+### Step 3: Seed Initial HR Account
+```cmd
+sqlcmd -S "(localdb)\MSSQLLocalDB" -i "ROSTERRA HR\Scripts\Database\003_SeedInitialHRAccount.sql"
 ```
 
 ---
 
-## 2. Execution Sequence
-Always execute the SQL migration scripts in strict numerical sequence:
+## 3. Connection String Configuration
 
-### Step 1: Database Creation
-- **Script**: `ROSTERRA HR/Scripts/Database/001_CreateDatabase.sql`
-- **Action**: Creates the `RosterraHRDB` database container.
-
-### Step 2: Employees Table Creation
-- **Script**: `ROSTERRA HR/Scripts/Database/002_CreateEmployeesTable.sql`
-- **Action**: Creates `dbo.Employees` with:
-  - Primary Key: `PK_Employees` (Clustered on `EmployeeId`)
-  - Unique Constraint: `UQ_Employees_Email` (Unique on `Email`)
-  - Check Constraint: `CK_Employees_Salary` (`Salary >= 0`)
-  - Default Constraints: `DF_Employees_IsActive` (`1`), `DF_Employees_CreatedAtUtc` (`SYSUTCDATETIME()`)
-  - Nullability: Enforces `NOT NULL` on all required fields.
-
-### Step 3: Seed Baseline Workforce Data
-- **Script**: `ROSTERRA HR/Scripts/Database/003_SeedEmployeesData.sql`
-- **Action**: Seeds 3 baseline active employee records:
-  1. Alice Johnson (HR Manager)
-  2. Bob Smith (Senior Developer)
-  3. Charlie Davis (Financial Analyst)
-
----
-
-## 3. How to Execute in Visual Studio 2022
-1. Open **View** → **SQL Server Object Explorer**.
-2. Connect to `(localdb)\MSSQLLocalDB`.
-3. Open `001_CreateDatabase.sql` → Execute.
-4. Open `002_CreateEmployeesTable.sql` → Execute.
-5. Open `003_SeedEmployeesData.sql` → Execute.
-
----
-
-## 4. Verification Queries
-```sql
-USE RosterraHRDB;
-GO
-
--- 1. Verify rows exist
-SELECT * FROM Employees;
-
--- 2. Verify constraints
-SELECT CONSTRAINT_NAME, CONSTRAINT_TYPE 
-FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS 
-WHERE TABLE_NAME = 'Employees';
+Located in `ROSTERRA HR/Web.config`:
+```xml
+<connectionStrings>
+  <add name="RosterraHRConnection" 
+       connectionString="Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=RosterraHRDB;Integrated Security=True;TrustServerCertificate=True" 
+       providerName="System.Data.SqlClient" />
+</connectionStrings>
 ```
+
+---
+
+## 4. Default Seeded Credentials
+- **Username**: `hradmin`
+- **Password**: `HR@2026`
+- **Role**: `HR`
+- **Password Security**: PBKDF2 HMAC-SHA256 (100,000 iterations, 128-bit salt)

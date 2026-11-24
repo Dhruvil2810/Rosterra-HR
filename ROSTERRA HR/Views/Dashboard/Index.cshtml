@@ -1,0 +1,113 @@
+@{
+    ViewBag.Title = "HR Dashboard";
+}
+
+<div class="container py-2">
+    <!-- Header Banner -->
+    <div class="d-flex justify-content-between align-items-center pb-3 mb-4 border-bottom">
+        <div>
+            <h2 class="h3 fw-bold mb-1 text-dark">Welcome, @(Session["Username"] ?? "HR Admin")</h2>
+            <p class="text-muted mb-0 small">Rosterra HR Administrative Workspace &bull; Session Active</p>
+        </div>
+        <div>
+            <a href="@Url.Action("Logout", "Account")" class="btn btn-outline-danger">
+                &#x21FD; Logout
+            </a>
+        </div>
+    </div>
+
+    <!-- Alert / System Status -->
+    <div class="alert alert-success d-flex align-items-center shadow-sm" role="alert">
+        <div class="me-2 fw-bold">&#10004;</div>
+        <div>
+            <strong>Phase 1 Initialized:</strong> Authentication and HR Dashboard session verified successfully.
+        </div>
+    </div>
+
+    <!-- Quick Navigation / Module Status -->
+    <div class="row g-4 mt-1">
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title fw-bold text-primary mb-0">Phase 1 &bull; Auth &amp; Session</h5>
+                        <span class="badge bg-success">Active</span>
+                    </div>
+                    <p class="card-text text-secondary small">
+                        Secure forms authentication, PBKDF2 password verification, role authorization, and session state.
+                    </p>
+                    <ul class="list-unstyled small text-muted mb-0">
+                        <li>&#10004; Username: <code>@(Session["Username"])</code></li>
+                        <li>&#10004; Role: <code>@(Session["Role"])</code></li>
+                        <li>&#10004; Security: PBKDF2 SHA-256</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title fw-bold text-dark mb-0">Phase 2 &bull; Employee Management</h5>
+                        <span class="badge bg-secondary">Upcoming</span>
+                    </div>
+                    <p class="card-text text-secondary small">
+                        Employee CRUD operations, status management, search, and validation using manual ADO.NET.
+                    </p>
+                    <div class="alert alert-light border small text-muted mb-0 py-2">
+                        <em>Awaiting Phase 1 sign-off before proceeding.</em>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title fw-bold text-dark mb-0">Phase 3 &bull; RBAC &amp; Profiles</h5>
+                        <span class="badge bg-secondary">Upcoming</span>
+                    </div>
+                    <p class="card-text text-secondary small">
+                        Multi-role authorization (HR and Employee portal), role-based view rendering, and profile view.
+                    </p>
+                    <div class="alert alert-light border small text-muted mb-0 py-2">
+                        <em>Scheduled for subsequent phase.</em>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Placeholder Section for Future HR Modules -->
+    <div class="mt-5">
+        <h5 class="fw-bold text-secondary mb-3">Future HR Modules</h5>
+        <div class="row g-3">
+            <div class="col-6 col-md-3">
+                <div class="placeholder-card">
+                    <div class="fw-semibold">Departments</div>
+                    <small class="text-muted">Module 1</small>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="placeholder-card">
+                    <div class="fw-semibold">Attendance &amp; Shifts</div>
+                    <small class="text-muted">Module 2 &amp; 3</small>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="placeholder-card">
+                    <div class="fw-semibold">Leave Management</div>
+                    <small class="text-muted">Module 4</small>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="placeholder-card">
+                    <div class="fw-semibold">Payroll &amp; Reviews</div>
+                    <small class="text-muted">Module 5 &amp; 7</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

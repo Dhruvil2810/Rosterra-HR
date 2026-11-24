@@ -3,31 +3,27 @@
 ## 1. Database Overview
 - **Database Engine**: Microsoft SQL Server LocalDB (`(localdb)\MSSQLLocalDB`)
 - **Database Name**: `RosterraHRDB`
-- **Design Philosophy**: Database-First with versioned DDL scripts and strict relational constraints.
-- **Auditing Baseline**: UTC timestamps (`CreatedAtUtc`, `UpdatedAtUtc`) and soft-delete flags (`IsActive`).
+- **Design Philosophy**: Database-First with versioned SQL DDL scripts, manual ADO.NET, and strict relational integrity.
+- **Auditing Baseline**: UTC timestamps (`CreatedAtUtc`, `LastLoginAtUtc`) and soft status flags (`IsActive`).
 
 ---
 
-## 2. Table: `dbo.Employees`
+## 2. Table: `dbo.Users` (Phase 1 Baseline)
 
-The `Employees` table is the central workforce entity for Version 1 of Rosterra HR.
+The `Users` table manages authentication and role assignments across the system.
 
 ### Schema Definition
 
 | Column | Data Type | Nullable | Default | Constraints | Description |
 | :--- | :--- | :---: | :--- | :--- | :--- |
-| `EmployeeId` | `INT IDENTITY(1,1)` | NO | Auto (1,1) | `PK_Employees` (Clustered) | Primary Key; auto-incrementing surrogate identifier. |
-| `FirstName` | `NVARCHAR(50)` | NO | None | None | Employee first name (Unicode). |
-| `LastName` | `NVARCHAR(50)` | NO | None | None | Employee last name (Unicode). |
-| `Email` | `NVARCHAR(100)` | NO | None | `UQ_Employees_Email` (Unique) | Unique employee corporate email address. |
-| `PhoneNumber` | `NVARCHAR(20)` | YES | None | None | Optional contact telephone number. |
-| `Department` | `NVARCHAR(50)` | NO | None | None | Assigned department (e.g. IT, HR, Finance). |
-| `Position` | `NVARCHAR(50)` | NO | None | None | Job title / designation. |
-| `Salary` | `DECIMAL(18,2)` | NO | None | `CK_Employees_Salary` (`>= 0`) | Exact fixed-precision compensation. |
-| `HireDate` | `DATE` | NO | None | None | Date employee joined the company. |
-| `IsActive` | `BIT` | NO | `1` | `DF_Employees_IsActive` | Soft-delete flag (1 = Active, 0 = Inactive). |
-| `CreatedAtUtc` | `DATETIME2` | NO | `SYSUTCDATETIME()` | `DF_Employees_CreatedAtUtc` | Unambiguous UTC record creation timestamp. |
-| `UpdatedAtUtc` | `DATETIME2` | YES | None | None | Unambiguous UTC last modification timestamp. |
+| `UserId` | `INT IDENTITY(1,1)` | NO | Auto (1,1) | `PK_Users` (Clustered) | Primary Key; auto-incrementing surrogate identifier. |
+| `Username` | `NVARCHAR(50)` | NO | None | `UQ_Users_Username` (Unique) | Unique login username. |
+| `PasswordHash` | `NVARCHAR(256)` | NO | None | None | Base64-encoded PBKDF2 HMAC-SHA256 hash. |
+| `PasswordSalt` | `NVARCHAR(256)` | NO | None | None | Base64-encoded 128-bit cryptographic salt. |
+| `Role` | `NVARCHAR(20)` | NO | `'HR'` | `DF_Users_Role`, `CK_Users_Role` | Role indicator (`HR` or `Employee`). |
+| `IsActive` | `BIT` | NO | `1` | `DF_Users_IsActive` | Active status flag (1 = Active, 0 = Suspended). |
+| `CreatedAtUtc` | `DATETIME2` | NO | `SYSUTCDATETIME()` | `DF_Users_CreatedAtUtc` | High-precision record creation timestamp (UTC). |
+| `LastLoginAtUtc` | `DATETIME2` | YES | None | None | High-precision timestamp of last successful authentication (UTC). |
 
 ---
 
@@ -35,16 +31,16 @@ The `Employees` table is the central workforce entity for Version 1 of Rosterra 
 
 | Constraint Name | Type | Target Column(s) | Business Rule / Purpose |
 | :--- | :--- | :--- | :--- |
-| `PK_Employees` | Primary Key | `EmployeeId` | Guarantees uniqueness and establishes physical clustered index order. |
-| `UQ_Employees_Email` | Unique | `Email` | Prevents duplicate employee registrations with the same email address. |
-| `CK_Employees_Salary` | Check | `Salary` | Guarantees salaries are non-negative (`Salary >= 0`). |
-| `DF_Employees_IsActive` | Default | `IsActive` | Default new employees to active (`1`). |
-| `DF_Employees_CreatedAtUtc`| Default | `CreatedAtUtc`| Auto-populates creation timestamp using high-precision UTC. |
+| `PK_Users` | Primary Key | `UserId` | Enforces entity uniqueness and clustered index structure. |
+| `UQ_Users_Username` | Unique | `Username` | Prevents duplicate accounts with the same username. |
+| `CK_Users_Role` | Check | `Role` | Ensures role value is restricted to valid values: `Role IN ('HR', 'Employee')`. |
+| `DF_Users_Role` | Default | `Role` | Defaults role to `'HR'` if omitted during creation. |
+| `DF_Users_IsActive` | Default | `IsActive` | Defaults new accounts to active status (`1`). |
+| `DF_Users_CreatedAtUtc` | Default | `CreatedAtUtc` | Auto-populates creation timestamp using server UTC time (`SYSUTCDATETIME()`). |
 
 ---
 
 ## 4. Script Execution Order
-1. `001_CreateDatabase.sql` — Creates `RosterraHRDB`.
-2. `002_CreateEmployeesTable.sql` — Creates `dbo.Employees` and constraints.
-3. `003_SeedEmployeesData.sql` — Seeds baseline records for testing.
-
+1. `001_CreateDatabase.sql` — Cleanly drops legacy DB if present and initializes fresh `RosterraHRDB`.
+2. `002_CreateUsersTable.sql` — Creates `dbo.Users` table with all integrity constraints.
+3. `003_SeedInitialHRAccount.sql` — Seeds initial HR administrator account (`hradmin` / `HR@2026`) with PBKDF2 hash.

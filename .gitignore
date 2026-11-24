@@ -21,3 +21,12 @@ App_Data/*.ldf
 ## Node/Frontend build artifacts (if any future use)
 node_modules/
 
+## Antigravity and AI internal working context
+.gemini/
+.system_generated/
+*.log
+*.tmp
+_local/
+.artifacts/
+
+

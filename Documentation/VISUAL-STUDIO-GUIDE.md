@@ -38,3 +38,21 @@ This reference explains how to open, build, run, and debug Rosterra HR on any Wi
    - `F5`: Continue running.
 7. Hover over variables to inspect their runtime values or check the **Locals** and **Watch** windows.
 
+---
+
+## 5. Connecting to LocalDB & Inspecting Database Records
+1. In Visual Studio 2022, open **View** &rarr; **SQL Server Object Explorer**.
+2. Expand **SQL Server** &rarr; `(localdb)\MSSQLLocalDB` &rarr; **Databases** &rarr; `RosterraHRDB`.
+3. Expand **Tables** &rarr; right-click `dbo.Users` &rarr; select **View Data**.
+4. You will see the `hradmin` record with `PasswordHash`, `PasswordSalt`, and `Role = 'HR'`.
+5. After logging in through the browser, refresh the table view to observe `LastLoginAtUtc` updated automatically.
+
+---
+
+## 6. Phase 1 Login Test Credentials
+- **URL**: `http://localhost:port/Account/Login`
+- **Username**: `hradmin`
+- **Password**: `HR@2026`
+- **Expected Outcome**: Redirects to `/Dashboard` and renders the welcome banner.
+
+
