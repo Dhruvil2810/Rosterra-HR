@@ -88,6 +88,11 @@
                                 @Html.TextBoxFor(m => m.HireDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
                                 @Html.ValidationMessageFor(m => m.HireDate, "", new { @class = "text-danger small mt-1 d-block" })
                             </div>
+                            <div class="col-md-6">
+                                @Html.LabelFor(m => m.ShiftId, new { @class = "form-label" })
+                                @Html.DropDownListFor(m => m.ShiftId, (SelectList)ViewBag.Shifts, "-- Select Work Shift --", new { @class = "form-select" })
+                                @Html.ValidationMessageFor(m => m.ShiftId, "", new { @class = "text-danger small mt-1 d-block" })
+                            </div>
                         </div>
 
                         <!-- Section 3: Portal Login Credentials -->

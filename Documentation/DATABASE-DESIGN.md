@@ -12,8 +12,6 @@
 
 The `Users` table manages authentication and role assignments across the system.
 
-### Schema Definition
-
 | Column | Data Type | Nullable | Default | Constraints | Description |
 | :--- | :--- | :---: | :--- | :--- | :--- |
 | `UserId` | `INT IDENTITY(1,1)` | NO | Auto (1,1) | `PK_Users` (Clustered) | Primary Key; auto-incrementing surrogate identifier. |
@@ -27,47 +25,72 @@ The `Users` table manages authentication and role assignments across the system.
 
 ---
 
-## 3. Table: `dbo.Employees`
+## 3. Table: `dbo.Shifts`
 
-The `Employees` table stores core workforce records and links directly to `dbo.Users`.
-
-### Schema Definition
+The `Shifts` table defines workplace operational shifts.
 
 | Column | Data Type | Nullable | Default | Constraints | Description |
 | :--- | :--- | :---: | :--- | :--- | :--- |
-| `EmployeeId` | `INT IDENTITY(1,1)` | NO | Auto (1,1) | `PK_Employees` (Clustered) | Primary Key; auto-incrementing surrogate identifier. |
-| `UserId` | `INT` | NO | None | `FK_Employees_Users`, `UQ_Employees_UserId` | Foreign Key referencing `dbo.Users(UserId)`. |
+| `ShiftId` | `INT IDENTITY(1,1)` | NO | Auto (1,1) | `PK_Shifts` (Clustered) | Primary Key. |
+| `ShiftName` | `NVARCHAR(50)` | NO | None | `UQ_Shifts_ShiftName` | Unique shift identifier name. |
+| `StartTime` | `TIME(0)` | NO | None | None | Scheduled start of operational shift. |
+| `EndTime` | `TIME(0)` | NO | None | None | Scheduled end of operational shift. |
+| `Description`| `NVARCHAR(250)` | YES | None | None | Operational notes or break description. |
+| `IsActive` | `BIT` | NO | `1` | `DF_Shifts_IsActive` | Active status flag. |
+| `CreatedAtUtc`| `DATETIME2`| NO | `SYSUTCDATETIME()` | `DF_Shifts_CreatedAtUtc` | Record creation timestamp (UTC). |
+
+---
+
+## 4. Table: `dbo.Employees`
+
+Workforce records linked to `dbo.Users` and assigned to a `dbo.Shifts`.
+
+| Column | Data Type | Nullable | Default | Constraints | Description |
+| :--- | :--- | :---: | :--- | :--- | :--- |
+| `EmployeeId` | `INT IDENTITY(1,1)` | NO | Auto (1,1) | `PK_Employees` (Clustered) | Primary Key. |
+| `UserId` | `INT` | NO | None | `FK_Employees_Users`, `UQ_Employees_UserId` | FK referencing `dbo.Users(UserId)`. |
+| `ShiftId` | `INT` | YES | None | `FK_Employees_Shifts` | FK referencing `dbo.Shifts(ShiftId)`. |
 | `FirstName` | `NVARCHAR(50)` | NO | None | None | Employee first name. |
 | `LastName` | `NVARCHAR(50)` | NO | None | None | Employee last name. |
-| `Email` | `NVARCHAR(100)` | NO | None | `UQ_Employees_Email` (Unique) | Unique employee corporate email address. |
-| `PhoneNumber` | `NVARCHAR(20)` | YES | None | None | Optional contact telephone number. |
-| `Department` | `NVARCHAR(50)` | NO | None | None | Department name (e.g. Engineering, HR). |
-| `Position` | `NVARCHAR(50)` | NO | None | None | Job title / designation. |
-| `Salary` | `DECIMAL(18,2)` | NO | None | `CK_Employees_Salary` (`>= 0`) | Exact fixed-precision compensation. |
-| `HireDate` | `DATE` | NO | None | None | Date of hire. |
+| `Email` | `NVARCHAR(100)` | NO | None | `UQ_Employees_Email` (Unique) | Unique corporate email address. |
+| `PhoneNumber`| `NVARCHAR(20)` | YES | None | None | Optional telephone contact. |
+| `Department` | `NVARCHAR(50)` | NO | None | None | Assigned department. |
+| `Position` | `NVARCHAR(50)` | NO | None | None | Position / job title. |
+| `Salary` | `DECIMAL(18,2)` | NO | None | `CK_Employees_Salary` (`>= 0`) | Base compensation. |
+| `HireDate` | `DATE` | NO | None | None | Joining date. |
 | `IsActive` | `BIT` | NO | `1` | `DF_Employees_IsActive` | Soft-delete status flag. |
-| `CreatedAtUtc` | `DATETIME2` | NO | `SYSUTCDATETIME()` | `DF_Employees_CreatedAtUtc` | High-precision record creation timestamp (UTC). |
-| `UpdatedAtUtc` | `DATETIME2` | YES | None | None | Timestamp of last modification (UTC). |
+| `CreatedAtUtc`| `DATETIME2`| NO | `SYSUTCDATETIME()` | `DF_Employees_CreatedAtUtc` | Record creation timestamp (UTC). |
+| `UpdatedAtUtc`| `DATETIME2`| YES | None | None | Last modification timestamp (UTC). |
 
 ---
 
-## 4. Relational Constraints & Integrity Rules
+## 5. Table: `dbo.Attendances`
 
-| Constraint Name | Type | Target Column(s) | Business Rule / Purpose |
-| :--- | :--- | :--- | :--- |
-| `PK_Users` | Primary Key | `UserId` | Enforces entity uniqueness and clustered index structure. |
-| `UQ_Users_Username` | Unique | `Username` | Prevents duplicate accounts with the same username. |
-| `CK_Users_Role` | Check | `Role` | Ensures role value is restricted to: `Role IN ('HR', 'Employee')`. |
-| `PK_Employees` | Primary Key | `EmployeeId` | Enforces employee record uniqueness. |
-| `FK_Employees_Users`| Foreign Key | `UserId` | Enforces referential integrity with `dbo.Users(UserId)`. |
-| `UQ_Employees_UserId`| Unique | `UserId` | Enforces 1-to-1 account-to-employee mapping. |
-| `UQ_Employees_Email` | Unique | `Email` | Prevents multiple employee records with the same email. |
-| `CK_Employees_Salary`| Check | `Salary` | Guarantees non-negative compensation (`Salary >= 0`). |
+Daily employee punch records, timestamp evaluations, and shift compliance logs.
+
+| Column | Data Type | Nullable | Default | Constraints | Description |
+| :--- | :--- | :---: | :--- | :--- | :--- |
+| `AttendanceId` | `INT IDENTITY(1,1)` | NO | Auto (1,1) | `PK_Attendances` | Primary Key. |
+| `EmployeeId` | `INT` | NO | None | `FK_Attendances_Employees` | FK referencing `dbo.Employees(EmployeeId)`. |
+| `ShiftId` | `INT` | NO | None | `FK_Attendances_Shifts` | FK referencing `dbo.Shifts(ShiftId)`. |
+| `AttendanceDate` | `DATE` | NO | None | `UQ_Attendances_Employee_Date` | Date of attendance (1 record per day per employee). |
+| `PunchInTime` | `DATETIME2` | YES | None | None | Timestamp of arrival punch. |
+| `PunchOutTime` | `DATETIME2` | YES | None | None | Timestamp of departure punch. |
+| `Status` | `NVARCHAR(20)` | NO | None | `CK_Attendances_Status` | `Present`, `Late`, `Absent`, or `Pending`. |
+| `ShiftStartTimeSnapshot` | `TIME(0)` | NO | None | None | Shift start time at time of punch. |
+| `ShiftEndTimeSnapshot` | `TIME(0)` | NO | None | None | Shift end time at time of punch. |
+| `TotalHours` | `DECIMAL(5,2)` | YES | None | None | Total hours worked between punch in and punch out. |
+| `Remarks` | `NVARCHAR(250)` | YES | None | None | Calculated arrival early/late notes and departure notes. |
+| `MarkedByUserId` | `INT` | NO | None | `FK_Attendances_Users` | FK referencing User who marked the punch. |
+| `CreatedAtUtc` | `DATETIME2` | NO | `SYSUTCDATETIME()` | `DF_Attendances_CreatedAtUtc` | Audit creation timestamp (UTC). |
+| `UpdatedAtUtc` | `DATETIME2` | YES | None | None | Audit update timestamp (UTC). |
 
 ---
 
-## 5. Script Execution Order
-1. `001_CreateDatabase.sql` — Cleanly drops legacy DB if present and initializes fresh `RosterraHRDB`.
-2. `002_CreateUsersTable.sql` — Creates `dbo.Users` table with all integrity constraints.
-3. `003_SeedInitialHRAccount.sql` — Seeds initial HR administrator account (`hradmin` / `HR@2026`) with PBKDF2 hash.
-4. `004_CreateEmployeesTable.sql` — Creates `dbo.Employees` table with foreign key to `dbo.Users`.
+## 6. Script Execution Order
+1. `001_CreateDatabase.sql` — Initializes `RosterraHRDB`.
+2. `002_CreateUsersTable.sql` — Creates `dbo.Users`.
+3. `003_SeedInitialHRAccount.sql` — Seeds `hradmin` account.
+4. `004_CreateEmployeesTable.sql` — Creates `dbo.Employees`.
+5. `005_CreateShiftsAndAttendanceTables.sql` — Creates `dbo.Shifts` and `dbo.Attendances`, adds `ShiftId` to `dbo.Employees`.
+6. `006_SeedDefaultShifts.sql` — Seeds baseline shifts and maps active employees.

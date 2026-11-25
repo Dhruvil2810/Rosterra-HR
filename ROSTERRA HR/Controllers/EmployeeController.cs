@@ -15,10 +15,12 @@ namespace ROSTERRA_HR.Controllers
     public class EmployeeController : Controller
     {
         private readonly EmployeeRepository _employeeRepository;
+        private readonly ShiftRepository _shiftRepository;
 
         public EmployeeController()
         {
             _employeeRepository = new EmployeeRepository();
+            _shiftRepository = new ShiftRepository();
         }
 
         // GET: /Employee
@@ -51,6 +53,7 @@ namespace ROSTERRA_HR.Controllers
         [HttpGet]
         public ActionResult Create()
         {
+            ViewBag.Shifts = new SelectList(_shiftRepository.GetAllShifts(activeOnly: true), "ShiftId", "ShiftName");
             var model = new EmployeeCreateViewModel
             {
                 HireDate = DateTime.Today,
@@ -66,6 +69,7 @@ namespace ROSTERRA_HR.Controllers
         {
             if (!ModelState.IsValid)
             {
+                ViewBag.Shifts = new SelectList(_shiftRepository.GetAllShifts(activeOnly: true), "ShiftId", "ShiftName", model.ShiftId);
                 return View(model);
             }
 
@@ -75,6 +79,7 @@ namespace ROSTERRA_HR.Controllers
                 if (_employeeRepository.IsEmailTaken(model.Email))
                 {
                     ModelState.AddModelError("Email", "An employee with this email address already exists.");
+                    ViewBag.Shifts = new SelectList(_shiftRepository.GetAllShifts(activeOnly: true), "ShiftId", "ShiftName", model.ShiftId);
                     return View(model);
                 }
 
@@ -82,6 +87,7 @@ namespace ROSTERRA_HR.Controllers
                 if (_employeeRepository.IsUsernameTaken(model.Username))
                 {
                     ModelState.AddModelError("Username", "This username is already in use. Please select a different username.");
+                    ViewBag.Shifts = new SelectList(_shiftRepository.GetAllShifts(activeOnly: true), "ShiftId", "ShiftName", model.ShiftId);
                     return View(model);
                 }
 
@@ -97,7 +103,8 @@ namespace ROSTERRA_HR.Controllers
                     Department = model.Department,
                     Position = model.Position,
                     Salary = model.Salary,
-                    HireDate = model.HireDate
+                    HireDate = model.HireDate,
+                    ShiftId = model.ShiftId
                 };
 
                 int newEmployeeId = _employeeRepository.CreateEmployeeWithUser(
@@ -113,6 +120,7 @@ namespace ROSTERRA_HR.Controllers
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, "An error occurred while creating the employee: " + ex.Message);
+                ViewBag.Shifts = new SelectList(_shiftRepository.GetAllShifts(activeOnly: true), "ShiftId", "ShiftName", model.ShiftId);
                 return View(model);
             }
         }
@@ -127,6 +135,8 @@ namespace ROSTERRA_HR.Controllers
                 return HttpNotFound("Employee not found.");
             }
 
+            ViewBag.Shifts = new SelectList(_shiftRepository.GetAllShifts(activeOnly: true), "ShiftId", "ShiftName", employee.ShiftId);
+
             var model = new EmployeeEditViewModel
             {
                 EmployeeId = employee.EmployeeId,
@@ -140,6 +150,7 @@ namespace ROSTERRA_HR.Controllers
                 Position = employee.Position,
                 Salary = employee.Salary,
                 HireDate = employee.HireDate,
+                ShiftId = employee.ShiftId,
                 IsActive = employee.IsActive
             };
 
@@ -153,6 +164,7 @@ namespace ROSTERRA_HR.Controllers
         {
             if (!ModelState.IsValid)
             {
+                ViewBag.Shifts = new SelectList(_shiftRepository.GetAllShifts(activeOnly: true), "ShiftId", "ShiftName", model.ShiftId);
                 return View(model);
             }
 
@@ -162,6 +174,7 @@ namespace ROSTERRA_HR.Controllers
                 if (_employeeRepository.IsEmailTaken(model.Email, model.EmployeeId))
                 {
                     ModelState.AddModelError("Email", "This email address is already assigned to another employee.");
+                    ViewBag.Shifts = new SelectList(_shiftRepository.GetAllShifts(activeOnly: true), "ShiftId", "ShiftName", model.ShiftId);
                     return View(model);
                 }
 
@@ -175,7 +188,8 @@ namespace ROSTERRA_HR.Controllers
                     Department = model.Department,
                     Position = model.Position,
                     Salary = model.Salary,
-                    HireDate = model.HireDate
+                    HireDate = model.HireDate,
+                    ShiftId = model.ShiftId
                 };
 
                 _employeeRepository.UpdateEmployee(employee);
@@ -186,6 +200,7 @@ namespace ROSTERRA_HR.Controllers
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, "An error occurred while updating the employee: " + ex.Message);
+                ViewBag.Shifts = new SelectList(_shiftRepository.GetAllShifts(activeOnly: true), "ShiftId", "ShiftName", model.ShiftId);
                 return View(model);
             }
         }

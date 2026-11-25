@@ -103,7 +103,8 @@
                                     </td>
                                     <td>
                                         <div><span class="badge bg-light text-dark border">@emp.Department</span></div>
-                                        <small class="text-muted">@emp.Position</small>
+                                        <div class="fw-semibold small">@emp.Position</div>
+                                        <small class="text-primary">&#9200; @(string.IsNullOrEmpty(emp.ShiftName) ? "Unassigned" : emp.ShiftName + " (" + emp.ShiftTiming + ")")</small>
                                     </td>
                                     <td>
                                         <div><a href="mailto:@emp.Email" class="text-decoration-none small">@emp.Email</a></div>

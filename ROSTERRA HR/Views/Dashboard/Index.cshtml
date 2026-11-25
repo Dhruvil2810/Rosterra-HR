@@ -84,28 +84,34 @@
 
     <!-- Placeholder Section for Future HR Modules -->
     <div class="mt-5">
-        <h5 class="fw-bold text-secondary mb-3">Future HR Modules</h5>
+        <h5 class="fw-bold text-secondary mb-3">Workforce Operations Modules</h5>
         <div class="row g-3">
             <div class="col-6 col-md-3">
-                <div class="placeholder-card">
-                    <div class="fw-semibold">Departments</div>
-                    <small class="text-muted">Module 1</small>
-                </div>
+                <a href="@Url.Action("Index", "Shift")" class="text-decoration-none">
+                    <div class="card shadow-sm border-0 text-center p-3 h-100 bg-white">
+                        <div class="fs-3 text-primary mb-1">&#9200;</div>
+                        <div class="fw-bold text-dark">Shift System</div>
+                        <small class="text-muted">Manage schedules</small>
+                    </div>
+                </a>
             </div>
             <div class="col-6 col-md-3">
-                <div class="placeholder-card">
-                    <div class="fw-semibold">Attendance &amp; Shifts</div>
-                    <small class="text-muted">Module 2 &amp; 3</small>
-                </div>
+                <a href="@Url.Action("Index", "Attendance")" class="text-decoration-none">
+                    <div class="card shadow-sm border-0 text-center p-3 h-100 bg-white">
+                        <div class="fs-3 text-success mb-1">&#128197;</div>
+                        <div class="fw-bold text-dark">Attendance Roster</div>
+                        <small class="text-muted">Day-wise punch monitor</small>
+                    </div>
+                </a>
             </div>
             <div class="col-6 col-md-3">
-                <div class="placeholder-card">
+                <div class="placeholder-card h-100">
                     <div class="fw-semibold">Leave Management</div>
-                    <small class="text-muted">Module 4</small>
+                    <small class="text-muted">Module 4 (Next)</small>
                 </div>
             </div>
             <div class="col-6 col-md-3">
-                <div class="placeholder-card">
+                <div class="placeholder-card h-100">
                     <div class="fw-semibold">Payroll &amp; Reviews</div>
                     <small class="text-muted">Module 5 &amp; 7</small>
                 </div>

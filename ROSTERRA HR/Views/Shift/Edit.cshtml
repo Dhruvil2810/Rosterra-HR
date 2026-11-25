@@ -1,0 +1,72 @@
+@model ROSTERRA_HR.Models.ShiftViewModel
+
+@{
+    ViewBag.Title = "Edit Shift";
+}
+
+<div class="container py-2">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center pb-3 mb-4 border-bottom">
+                <div>
+                    <h2 class="h3 fw-bold mb-1 text-dark">Edit Shift: @Model.ShiftName</h2>
+                    <p class="text-muted mb-0 small">Modify shift operational hours and status.</p>
+                </div>
+                <a href="@Url.Action("Index", "Shift")" class="btn btn-outline-secondary btn-sm">
+                    &larr; Back to Shifts
+                </a>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    @using (Html.BeginForm("Edit", "Shift", FormMethod.Post, new { @class = "needs-validation", role = "form" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(m => m.ShiftId)
+
+                        if (!ViewData.ModelState.IsValid && ViewData.ModelState[string.Empty] != null)
+                        {
+                            @Html.ValidationSummary(true, "", new { @class = "alert alert-danger py-2 small" })
+                        }
+
+                        <div class="mb-3">
+                            @Html.LabelFor(m => m.ShiftName, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.ShiftName, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.ShiftName, "", new { @class = "text-danger small mt-1 d-block" })
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                @Html.LabelFor(m => m.StartTime, new { @class = "form-label" })
+                                <input type="time" name="StartTime" value="@Model.StartTime.ToString(@"hh\:mm")" class="form-control" required />
+                                @Html.ValidationMessageFor(m => m.StartTime, "", new { @class = "text-danger small mt-1 d-block" })
+                            </div>
+                            <div class="col-md-6">
+                                @Html.LabelFor(m => m.EndTime, new { @class = "form-label" })
+                                <input type="time" name="EndTime" value="@Model.EndTime.ToString(@"hh\:mm")" class="form-control" required />
+                                @Html.ValidationMessageFor(m => m.EndTime, "", new { @class = "text-danger small mt-1 d-block" })
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            @Html.LabelFor(m => m.Description, new { @class = "form-label" })
+                            @Html.TextAreaFor(m => m.Description, new { @class = "form-control", rows = 3 })
+                            @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger small mt-1 d-block" })
+                        </div>
+
+                        <div class="mb-4 form-check">
+                            @Html.CheckBoxFor(m => m.IsActive, new { @class = "form-check-input" })
+                            @Html.LabelFor(m => m.IsActive, "Active Shift", new { @class = "form-check-label" })
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="@Url.Action("Index", "Shift")" class="btn btn-outline-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary px-4 shadow-sm">Save Changes</button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

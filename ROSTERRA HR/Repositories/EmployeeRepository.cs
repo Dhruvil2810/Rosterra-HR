@@ -23,9 +23,11 @@ namespace ROSTERRA_HR.Repositories
             string sql = @"
                 SELECT e.EmployeeId, e.UserId, e.FirstName, e.LastName, e.Email, e.PhoneNumber,
                        e.Department, e.Position, e.Salary, e.HireDate, e.IsActive, e.CreatedAtUtc, e.UpdatedAtUtc,
+                       e.ShiftId, s.ShiftName, s.StartTime AS ShiftStartTime, s.EndTime AS ShiftEndTime,
                        u.Username
                 FROM dbo.Employees e
                 INNER JOIN dbo.Users u ON e.UserId = u.UserId
+                LEFT JOIN dbo.Shifts s ON e.ShiftId = s.ShiftId
                 WHERE 1 = 1";
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
@@ -86,9 +88,11 @@ namespace ROSTERRA_HR.Repositories
             const string sql = @"
                 SELECT e.EmployeeId, e.UserId, e.FirstName, e.LastName, e.Email, e.PhoneNumber,
                        e.Department, e.Position, e.Salary, e.HireDate, e.IsActive, e.CreatedAtUtc, e.UpdatedAtUtc,
+                       e.ShiftId, s.ShiftName, s.StartTime AS ShiftStartTime, s.EndTime AS ShiftEndTime,
                        u.Username
                 FROM dbo.Employees e
                 INNER JOIN dbo.Users u ON e.UserId = u.UserId
+                LEFT JOIN dbo.Shifts s ON e.ShiftId = s.ShiftId
                 WHERE e.EmployeeId = @EmployeeId;";
 
             using (var connection = ConnectionFactory.CreateOpenConnection())
@@ -117,9 +121,11 @@ namespace ROSTERRA_HR.Repositories
             const string sql = @"
                 SELECT e.EmployeeId, e.UserId, e.FirstName, e.LastName, e.Email, e.PhoneNumber,
                        e.Department, e.Position, e.Salary, e.HireDate, e.IsActive, e.CreatedAtUtc, e.UpdatedAtUtc,
+                       e.ShiftId, s.ShiftName, s.StartTime AS ShiftStartTime, s.EndTime AS ShiftEndTime,
                        u.Username
                 FROM dbo.Employees e
                 INNER JOIN dbo.Users u ON e.UserId = u.UserId
+                LEFT JOIN dbo.Shifts s ON e.ShiftId = s.ShiftId
                 WHERE e.UserId = @UserId;";
 
             using (var connection = ConnectionFactory.CreateOpenConnection())
@@ -220,11 +226,11 @@ namespace ROSTERRA_HR.Repositories
                     const string insertEmployeeSql = @"
                         INSERT INTO dbo.Employees (
                             UserId, FirstName, LastName, Email, PhoneNumber,
-                            Department, Position, Salary, HireDate, IsActive, CreatedAtUtc
+                            Department, Position, Salary, HireDate, ShiftId, IsActive, CreatedAtUtc
                         )
                         VALUES (
                             @UserId, @FirstName, @LastName, @Email, @PhoneNumber,
-                            @Department, @Position, @Salary, @HireDate, 1, SYSUTCDATETIME()
+                            @Department, @Position, @Salary, @HireDate, @ShiftId, 1, SYSUTCDATETIME()
                         );
                         SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
@@ -240,6 +246,7 @@ namespace ROSTERRA_HR.Repositories
                         empCommand.Parameters.Add("@Position", SqlDbType.NVarChar, 50).Value = employee.Position.Trim();
                         empCommand.Parameters.Add("@Salary", SqlDbType.Decimal).Value = employee.Salary;
                         empCommand.Parameters.Add("@HireDate", SqlDbType.Date).Value = employee.HireDate;
+                        empCommand.Parameters.Add("@ShiftId", SqlDbType.Int).Value = (object)employee.ShiftId ?? DBNull.Value;
 
                         newEmployeeId = Convert.ToInt32(empCommand.ExecuteScalar());
                     }
@@ -270,6 +277,7 @@ namespace ROSTERRA_HR.Repositories
                     Position = @Position,
                     Salary = @Salary,
                     HireDate = @HireDate,
+                    ShiftId = @ShiftId,
                     UpdatedAtUtc = SYSUTCDATETIME()
                 WHERE EmployeeId = @EmployeeId;";
 
@@ -285,6 +293,7 @@ namespace ROSTERRA_HR.Repositories
                 command.Parameters.Add("@Position", SqlDbType.NVarChar, 50).Value = employee.Position.Trim();
                 command.Parameters.Add("@Salary", SqlDbType.Decimal).Value = employee.Salary;
                 command.Parameters.Add("@HireDate", SqlDbType.Date).Value = employee.HireDate;
+                command.Parameters.Add("@ShiftId", SqlDbType.Int).Value = (object)employee.ShiftId ?? DBNull.Value;
 
                 command.ExecuteNonQuery();
             }
@@ -337,7 +346,7 @@ namespace ROSTERRA_HR.Repositories
 
         private static Employee MapEmployee(SqlDataReader reader)
         {
-            return new Employee
+            var emp = new Employee
             {
                 EmployeeId = reader.GetInt32(reader.GetOrdinal("EmployeeId")),
                 UserId = reader.GetInt32(reader.GetOrdinal("UserId")),
@@ -354,6 +363,17 @@ namespace ROSTERRA_HR.Repositories
                 UpdatedAtUtc = reader.IsDBNull(reader.GetOrdinal("UpdatedAtUtc")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("UpdatedAtUtc")),
                 Username = reader.GetString(reader.GetOrdinal("Username"))
             };
+
+            int shiftIdOrdinal = reader.GetOrdinal("ShiftId");
+            if (!reader.IsDBNull(shiftIdOrdinal))
+            {
+                emp.ShiftId = reader.GetInt32(shiftIdOrdinal);
+                emp.ShiftName = reader.GetString(reader.GetOrdinal("ShiftName"));
+                emp.ShiftStartTime = (TimeSpan)reader.GetValue(reader.GetOrdinal("ShiftStartTime"));
+                emp.ShiftEndTime = (TimeSpan)reader.GetValue(reader.GetOrdinal("ShiftEndTime"));
+            }
+
+            return emp;
         }
     }
 }

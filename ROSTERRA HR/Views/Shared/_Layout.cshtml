@@ -29,11 +29,20 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="@Url.Action("Index", "Employee")">Employees</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("Index", "Shift")">Shifts</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("Index", "Attendance")">Attendance</a>
+                            </li>
                         }
                         else if (Session["Role"] != null && string.Equals(Session["Role"].ToString(), "Employee", StringComparison.OrdinalIgnoreCase))
                         {
                             <li class="nav-item">
-                                <a class="nav-link" href="@Url.Action("Index", "EmployeeDashboard")">My Portal</a>
+                                <a class="nav-link" href="@Url.Action("Index", "EmployeeDashboard")">My Profile</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("Index", "EmployeeAttendance")">Attendance Log</a>
                             </li>
                         }
                     </ul>

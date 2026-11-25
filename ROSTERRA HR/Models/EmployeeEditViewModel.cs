@@ -57,6 +57,9 @@ namespace ROSTERRA_HR.Models
         [DataType(DataType.Date)]
         public DateTime HireDate { get; set; }
 
+        [Display(Name = "Assigned Shift")]
+        public int? ShiftId { get; set; }
+
         [Display(Name = "Active Status")]
         public bool IsActive { get; set; }
     }

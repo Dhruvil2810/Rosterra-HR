@@ -1,0 +1,216 @@
+@model ROSTERRA_HR.Models.AttendanceDayMonitorViewModel
+
+@{
+    ViewBag.Title = "Daily Attendance Monitor";
+    string dateStr = Model.SelectedDate.ToString("yyyy-MM-dd");
+}
+
+<div class="container py-2">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center pb-3 mb-4 border-bottom">
+        <div>
+            <h2 class="h3 fw-bold mb-1 text-dark">Daily Attendance Monitoring</h2>
+            <p class="text-muted mb-0 small">Real-time punch-in, punch-out, and shift timing compliance tracking.</p>
+        </div>
+        <!-- Date Selector Form -->
+        <div>
+            @using (Html.BeginForm("Index", "Attendance", FormMethod.Get, new { @class = "d-flex align-items-center gap-2" }))
+            {
+                <label class="small text-muted fw-bold">Date:</label>
+                <input type="date" name="date" value="@dateStr" class="form-control form-control-sm" onchange="this.form.submit()" />
+                <button type="submit" class="btn btn-sm btn-outline-secondary">Go</button>
+                <a href="@Url.Action("Index", "Attendance", new { date = DateTime.Today.ToString("yyyy-MM-dd") })" class="btn btn-sm btn-outline-primary">Today</a>
+            }
+        </div>
+    </div>
+
+    <!-- Feedback Alerts -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <strong>&#10004; Success:</strong> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+            <strong>&#10008; Error:</strong> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Attendance Metric Summary Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md">
+            <div class="card shadow-sm border-0 text-center py-2">
+                <div class="text-muted small">Total Employees</div>
+                <div class="fs-4 fw-bold text-dark">@Model.TotalActiveEmployees</div>
+            </div>
+        </div>
+        <div class="col-6 col-md">
+            <div class="card shadow-sm border-0 text-center py-2 bg-success bg-opacity-10 border-success">
+                <div class="text-success small fw-semibold">&#10004; Present (On-Time)</div>
+                <div class="fs-4 fw-bold text-success">@Model.PresentCount</div>
+            </div>
+        </div>
+        <div class="col-6 col-md">
+            <div class="card shadow-sm border-0 text-center py-2 bg-warning bg-opacity-10 border-warning">
+                <div class="text-warning-emphasis small fw-semibold">&#9888; Late Arrivals</div>
+                <div class="fs-4 fw-bold text-warning-emphasis">@Model.LateCount</div>
+            </div>
+        </div>
+        <div class="col-6 col-md">
+            <div class="card shadow-sm border-0 text-center py-2 bg-danger bg-opacity-10 border-danger">
+                <div class="text-danger small fw-semibold">&#10008; Absentees</div>
+                <div class="fs-4 fw-bold text-danger">@Model.AbsentCount</div>
+            </div>
+        </div>
+        <div class="col-6 col-md">
+            <div class="card shadow-sm border-0 text-center py-2 bg-secondary bg-opacity-10">
+                <div class="text-secondary small fw-semibold">Pending / Unmarked</div>
+                <div class="fs-4 fw-bold text-secondary">@Model.PendingCount</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Attendance Day Table -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold text-dark">Workforce Roster for @Model.SelectedDate.ToString("dddd, MMMM dd, yyyy")</h5>
+            <span class="badge bg-light text-dark border">@Model.Items.Count Employees</span>
+        </div>
+        <div class="card-body p-0">
+            @if (!Model.Items.Any())
+            {
+                <div class="text-center py-5 text-muted">
+                    <h5>No active employees found.</h5>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light small text-secondary">
+                            <tr>
+                                <th class="ps-3">EMPLOYEE</th>
+                                <th>ASSIGNED SHIFT</th>
+                                <th>PUNCH IN</th>
+                                <th>PUNCH OUT</th>
+                                <th>TOTAL HOURS</th>
+                                <th>STATUS</th>
+                                <th>LOG &amp; COMPLIANCE REMARKS</th>
+                                <th class="text-end pe-3">ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Items)
+                            {
+                                <tr>
+                                    <td class="ps-3">
+                                        <div class="fw-bold text-dark">@item.EmployeeName</div>
+                                        <small class="text-muted">@item.Department &bull; @item.Position</small>
+                                    </td>
+                                    <td>
+                                        <div><span class="badge bg-light text-dark border">@(item.ShiftName ?? "Unassigned")</span></div>
+                                        <small class="text-primary">&#9200; @item.ShiftTiming</small>
+                                    </td>
+                                    <td>
+                                        @if (item.PunchInTime.HasValue)
+                                        {
+                                            <span class="fw-bold text-dark">@item.FormattedPunchIn</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">--:--</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (item.PunchOutTime.HasValue)
+                                        {
+                                            <span class="fw-bold text-dark">@item.FormattedPunchOut</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">--:--</span>
+                                        }
+                                    </td>
+                                    <td class="fw-semibold">
+                                        @(item.TotalHours.HasValue ? item.TotalHours.Value.ToString("0.##") + " hrs" : "-")
+                                    </td>
+                                    <td>
+                                        @if (string.Equals(item.Status, "Present", StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            <span class="badge bg-success">Present</span>
+                                        }
+                                        else if (string.Equals(item.Status, "Late", StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            <span class="badge bg-warning text-dark">Late</span>
+                                        }
+                                        else if (string.Equals(item.Status, "Absent", StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            <span class="badge bg-danger">Absent</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Not Marked</span>
+                                        }
+                                    </td>
+                                    <td class="small text-muted" style="max-width: 260px;">
+                                        @(string.IsNullOrWhiteSpace(item.Remarks) ? "-" : item.Remarks)
+                                    </td>
+                                    <td class="text-end pe-3">
+                                        <div class="btn-group btn-group-sm">
+                                            @if (!item.PunchInTime.HasValue && !string.Equals(item.Status, "Absent", StringComparison.OrdinalIgnoreCase))
+                                            {
+                                                <!-- Punch In Form -->
+                                                using (Html.BeginForm("PunchIn", "Attendance", FormMethod.Post, new { @class = "d-inline" }))
+                                                {
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden" name="employeeId" value="@item.EmployeeId" />
+                                                    <input type="hidden" name="returnDate" value="@dateStr" />
+                                                    <button type="submit" class="btn btn-outline-success" title="Record arrival (Punch In)">
+                                                        &#9654; Punch In
+                                                    </button>
+                                                }
+
+                                                <!-- Mark Absent Form -->
+                                                using (Html.BeginForm("MarkAbsent", "Attendance", FormMethod.Post, new { @class = "d-inline ms-1", onsubmit = "return confirm('Mark " + item.EmployeeName + " as absent for today?');" }))
+                                                {
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden" name="employeeId" value="@item.EmployeeId" />
+                                                    <input type="hidden" name="date" value="@dateStr" />
+                                                    <input type="hidden" name="returnDate" value="@dateStr" />
+                                                    <button type="submit" class="btn btn-outline-danger" title="Mark Absent">
+                                                        Absent
+                                                    </button>
+                                                }
+                                            }
+                                            else if (item.PunchInTime.HasValue && !item.PunchOutTime.HasValue)
+                                            {
+                                                <!-- Punch Out Form -->
+                                                using (Html.BeginForm("PunchOut", "Attendance", FormMethod.Post, new { @class = "d-inline" }))
+                                                {
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden" name="employeeId" value="@item.EmployeeId" />
+                                                    <input type="hidden" name="returnDate" value="@dateStr" />
+                                                    <button type="submit" class="btn btn-outline-primary" title="Record departure (Punch Out)">
+                                                        &#9209; Punch Out
+                                                    </button>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-light text-muted border">Completed</span>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -22,6 +22,15 @@ namespace ROSTERRA_HR.Models
         public DateTime CreatedAtUtc { get; set; }
         public DateTime? UpdatedAtUtc { get; set; }
 
+        // Shift metadata
+        public int? ShiftId { get; set; }
+        public string ShiftName { get; set; }
+        public TimeSpan? ShiftStartTime { get; set; }
+        public TimeSpan? ShiftEndTime { get; set; }
+        public string ShiftTiming => (ShiftStartTime.HasValue && ShiftEndTime.HasValue)
+            ? $"{DateTime.Today.Add(ShiftStartTime.Value):hh:mm tt} - {DateTime.Today.Add(ShiftEndTime.Value):hh:mm tt}"
+            : "No Shift Assigned";
+
         // Joined account metadata
         public string Username { get; set; }
     }

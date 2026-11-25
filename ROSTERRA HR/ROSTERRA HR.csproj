@@ -95,23 +95,35 @@
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\AttendanceController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
+    <Compile Include="Controllers\EmployeeAttendanceController.cs" />
     <Compile Include="Controllers\EmployeeController.cs" />
     <Compile Include="Controllers\EmployeeDashboardController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\ShiftController.cs" />
     <Compile Include="Data\ConnectionFactory.cs" />
     <Compile Include="Filters\AuthorizeEmployeeAttribute.cs" />
     <Compile Include="Filters\AuthorizeHRAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Attendance.cs" />
+    <Compile Include="Models\AttendanceDayMonitorViewModel.cs" />
+    <Compile Include="Models\AttendanceMarkViewModel.cs" />
     <Compile Include="Models\Employee.cs" />
+    <Compile Include="Models\EmployeeAttendanceLogViewModel.cs" />
     <Compile Include="Models\EmployeeCreateViewModel.cs" />
     <Compile Include="Models\EmployeeEditViewModel.cs" />
     <Compile Include="Models\LoginViewModel.cs" />
+    <Compile Include="Models\Shift.cs" />
+    <Compile Include="Models\ShiftAssignViewModel.cs" />
+    <Compile Include="Models\ShiftViewModel.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\AttendanceRepository.cs" />
     <Compile Include="Repositories\EmployeeRepository.cs" />
+    <Compile Include="Repositories\ShiftRepository.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
     <Compile Include="Security\PasswordHasher.cs" />
   </ItemGroup>
@@ -128,6 +140,12 @@
     <Content Include="Views\Employee\Edit.cshtml" />
     <Content Include="Views\Employee\Details.cshtml" />
     <Content Include="Views\EmployeeDashboard\Index.cshtml" />
+    <Content Include="Views\Shift\Index.cshtml" />
+    <Content Include="Views\Shift\Create.cshtml" />
+    <Content Include="Views\Shift\Edit.cshtml" />
+    <Content Include="Views\Shift\Assign.cshtml" />
+    <Content Include="Views\Attendance\Index.cshtml" />
+    <Content Include="Views\EmployeeAttendance\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

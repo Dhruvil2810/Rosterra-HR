@@ -1,0 +1,53 @@
+@model ROSTERRA_HR.Models.ShiftAssignViewModel
+
+@{
+    ViewBag.Title = "Assign Shift";
+}
+
+<div class="container py-2">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center pb-3 mb-4 border-bottom">
+                <div>
+                    <h2 class="h3 fw-bold mb-1 text-dark">Assign Employee Shift</h2>
+                    <p class="text-muted mb-0 small">Map an employee to a scheduled workplace shift.</p>
+                </div>
+                <a href="@Url.Action("Index", "Shift")" class="btn btn-outline-secondary btn-sm">
+                    &larr; Back to Shifts
+                </a>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    @using (Html.BeginForm("Assign", "Shift", FormMethod.Post, new { @class = "needs-validation", role = "form" }))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        if (!ViewData.ModelState.IsValid && ViewData.ModelState[string.Empty] != null)
+                        {
+                            @Html.ValidationSummary(true, "", new { @class = "alert alert-danger py-2 small" })
+                        }
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Select Employee</label>
+                            @Html.DropDownListFor(m => m.EmployeeId, (SelectList)ViewBag.Employees, "-- Select Employee --", new { @class = "form-select", required = "required" })
+                            @Html.ValidationMessageFor(m => m.EmployeeId, "", new { @class = "text-danger small mt-1 d-block" })
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Select Target Shift</label>
+                            @Html.DropDownListFor(m => m.ShiftId, (SelectList)ViewBag.Shifts, "-- Select Work Shift --", new { @class = "form-select", required = "required" })
+                            @Html.ValidationMessageFor(m => m.ShiftId, "", new { @class = "text-danger small mt-1 d-block" })
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="@Url.Action("Index", "Shift")" class="btn btn-outline-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary px-4 shadow-sm">Confirm Shift Assignment</button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

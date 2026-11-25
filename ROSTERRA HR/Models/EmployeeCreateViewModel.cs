@@ -49,6 +49,9 @@ namespace ROSTERRA_HR.Models
         [DataType(DataType.Date)]
         public DateTime HireDate { get; set; } = DateTime.Today;
 
+        [Display(Name = "Assigned Shift")]
+        public int? ShiftId { get; set; }
+
         [Required(ErrorMessage = "Login username is required.")]
         [Display(Name = "Employee Username")]
         [StringLength(50, MinimumLength = 3, ErrorMessage = "Username must be between 3 and 50 characters.")]
