@@ -1,0 +1,91 @@
+@model ROSTERRA_HR.Models.EmployeeAttendanceLogViewModel
+
+@{
+    ViewBag.Title = "My Attendance Log";
+}
+
+<div class="container py-2">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center pb-3 mb-4 border-bottom">
+        <div>
+            <h2 class="h3 fw-bold mb-1 text-dark">My Shift &amp; Attendance Log</h2>
+            <p class="text-muted mb-0 small">Review your assigned workplace shift timings and chronological punch-in/out records.</p>
+        </div>
+        <a href="@Url.Action("Index", "EmployeeDashboard")" class="btn btn-outline-secondary btn-sm">
+            &larr; Back to Portal
+        </a>
+    </div>
+
+    <!-- Shift & Today Overview Cards -->
+    <div class="row g-4 mb-4">
+        <!-- Assigned Shift Schedule -->
+        <div class="col-md-5">
+            <div class="card shadow-sm border-0 h-100 bg-white">
+                <div class="card-body p-4">
+<div class="d-flex align-items-center mb-3">
+                        <span class="fs-2 text-primary me-3">&#9200;</span>
+                        <div>
+                            <h5 class="fw-bold mb-0 text-dark">Assigned Shift</h5>
+                            <span class="badge bg-primary">@Model.ShiftName</span>
+                        </div>
+                    </div>
+                    <div class="p-3 bg-light rounded border text-center my-3">
+                        <div class="small text-muted">Daily Operating Window</div>
+                        <div class="fs-4 fw-bold text-primary">@Model.ShiftTiming</div>
+                    </div>
+                    <ul class="list-unstyled small text-muted mb-0">
+                        <li>&bull; Employee: <strong>@Model.EmployeeName</strong></li>
+                        <li>&bull; Department: @Model.Department</li>
+                        <li>&bull; Role: @Model.Position</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Today's Punch Status -->
+        <div class="col-md-7">
+            <div class="card shadow-sm border-0 h-100 bg-white">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold text-dark mb-3">Today's Attendance Status (@DateTime.Today.ToString("MMM dd, yyyy"))</h5>
+                    @if (Model.TodayAttendance != null)
+                    {
+                        <div class="row g-3 text-center mb-3">
+                            <div class="col-4">
+                                <div class="p-2 border rounded bg-light">
+                                    <small class="text-muted d-block">Punch In</small>
+                                    <strong class="fs-5 text-dark">@Model.TodayAttendance.FormattedPunchIn</strong>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="p-2 border rounded bg-light">
+                                    <small class="text-muted d-block">Punch Out</small>
+                                    <strong class="fs-5 text-dark">@Model.TodayAttendance.FormattedPunchOut</strong>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="p-2 border rounded bg-light">
+                                    <small class="text-muted d-block">Worked Hours</small>
+                                    <strong class="fs-5 text-dark">@(Model.TodayAttendance.TotalHours.HasValue ? Model.TodayAttendance.TotalHours.Value.ToString("0.##") + " hrs" : "--")</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center justify-content-between p-3 rounded @(string.Equals(Model.TodayAttendance.Status, "Present", StringComparison.OrdinalIgnoreCase) ? "bg-success bg-opacity-10 text-success" : (string.Equals(Model.TodayAttendance.Status, "Late", StringComparison.OrdinalIgnoreCase) ? "bg-warning bg-opacity-10 text-warning-emphasis" : "bg-danger bg-opacity-10 text-danger"))">
+                            <div>
+                                <strong>Status:</strong> @Model.TodayAttendance.Status
+                                <div class="small">@Model.TodayAttendance.Remarks</div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-secondary py-3 mb-0">
+                            <strong>No punch recorded yet today.</strong>
+                            <p class="small text-muted mb-0 mt-1">HR will record your arrival punch-in upon entry to the workplace.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
