@@ -1,0 +1,268 @@
+@model ROSTERRA_HR.Models.EmployeeLeaveListViewModel
+
+@{
+    ViewBag.Title = "My Leave Requests";
+}
+
+<div class="container py-3">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center pb-3 mb-4 border-bottom">
+        <div>
+            <h2 class="h3 fw-bold mb-1 text-dark">My Leaves &amp; Time-Off</h2>
+            <p class="text-muted mb-0 small">Apply for leave, track approval status, and review time-off history (Sundays are automatic holidays).</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="@Url.Action("Index", "EmployeeAttendance")" class="btn btn-outline-primary btn-sm">
+                &#9200; Attendance Log
+            </a>
+            <a href="@Url.Action("Index", "EmployeeDashboard")" class="btn btn-outline-secondary btn-sm">
+                &larr; Back to Portal
+            </a>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>&#10004; Success:</strong> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>&#9888; Notice:</strong> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Stat Summary Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-white p-3 border-start border-4 border-primary">
+                <div class="text-muted small">Total Requests</div>
+                <div class="h3 fw-bold text-dark mb-0">@Model.TotalApplied</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-white p-3 border-start border-4 border-warning">
+                <div class="text-muted small">Pending Approval</div>
+                <div class="h3 fw-bold text-warning mb-0">@Model.PendingCount</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-white p-3 border-start border-4 border-success">
+                <div class="text-muted small">Approved</div>
+                <div class="h3 fw-bold text-success mb-0">@Model.ApprovedCount</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-white p-3 border-start border-4 border-danger">
+                <div class="text-muted small">Rejected</div>
+                <div class="h3 fw-bold text-danger mb-0">@Model.RejectedCount</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Application Form Column -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm bg-white">
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="fw-bold mb-0 text-white">Apply for Leave</h5>
+                </div>
+                <div class="card-body p-4">
+                    @using (Html.BeginForm("Apply", "EmployeeLeave", FormMethod.Post, new { id = "leaveForm" }))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small text-muted">Leave Type</label>
+                            <select name="LeaveType" class="form-select" required>
+                                <option value="Casual Leave">Casual Leave</option>
+                                <option value="Sick Leave">Sick Leave</option>
+                                <option value="Paid Leave">Paid Leave</option>
+                                <option value="Unpaid Leave">Unpaid Leave</option>
+                            </select>
+                        </div>
+<div class="mb-3">
+                            <label class="form-label fw-semibold small text-muted">From Date</label>
+                            <input type="date" id="startDate" name="StartDate" class="form-control" 
+                                   value="@Model.ApplyForm.StartDate.ToString("yyyy-MM-dd")" 
+                                   min="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small text-muted">To Date</label>
+                            <input type="date" id="endDate" name="EndDate" class="form-control" 
+                                   value="@Model.ApplyForm.EndDate.ToString("yyyy-MM-dd")" 
+                                   min="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+                        </div>
+
+                        <div id="dayCalculationNotice" class="alert alert-info py-2 small mb-3">
+                            <strong>Working Days:</strong> <span id="workingDaysCount">1</span> day(s)
+                            <div class="text-muted" style="font-size: 0.75rem;">Sundays are automatically excluded as weekly offs.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small text-muted">Reason for Leave</label>
+                            <textarea name="Reason" class="form-control" rows="3" placeholder="Provide a brief explanation for your leave..." required minlength="5" maxlength="500"></textarea>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary fw-semibold">
+                                Submit Leave Request
+                            </button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- History Table Column -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm bg-white">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h5 class="fw-bold mb-0 text-dark">My Leave Application History</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light text-muted small text-uppercase">
+                                <tr>
+                                    <th>Leave Type</th>
+                                    <th>Period</th>
+                                    <th>Days</th>
+                                    <th>Reason</th>
+                                    <th>Status</th>
+                                    <th>HR Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.Leaves != null && Model.Leaves.Any())
+                                {
+                                    foreach (var leave in Model.Leaves)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <span class="badge bg-light text-dark border">@leave.LeaveType</span>
+                                                <div class="small text-muted mt-1" style="font-size: 0.75rem;">@leave.FormattedCreatedAt</div>
+                                            </td>
+                                            <td>
+                                                <div class="fw-semibold small">@leave.FormattedStartDate</div>
+<div class="text-muted small">&darr; to @leave.FormattedEndDate</div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info text-dark">@leave.TotalDays day(s)</span>
+                                            </td>
+                                            <td style="max-width: 200px;">
+                                                <span class="text-truncate d-inline-block small" style="max-width: 190px;" title="@leave.Reason">
+                                                    @leave.Reason
+                                                </span>
+                                            </td>
+                                            <td>
+                                                @if (leave.Status == "Pending")
+                                                {
+                                                    <span class="badge bg-warning text-dark">Pending</span>
+                                                }
+                                                else if (leave.Status == "Approved")
+                                                {
+                                                    <span class="badge bg-success">Approved</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-danger">Rejected</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <span class="small text-muted">@(string.IsNullOrEmpty(leave.AdminRemarks) ? "--" : leave.AdminRemarks)</span>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="6" class="text-center py-4 text-muted">
+                                            No leave applications submitted yet.
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Live Sunday Exclusion and Working Days Calculation on Date Change
+    const blockedDates = [
+        @if (Model.ApplyForm != null && Model.ApplyForm.BlockedDates != null)
+        {
+            foreach (var d in Model.ApplyForm.BlockedDates)
+            {
+                <text>'@d',</text>
+            }
+        }
+    ];
+
+    function updateDayCalculation() {
+        const startInput = document.getElementById("startDate").value;
+        const endInput = document.getElementById("endDate").value;
+        const countSpan = document.getElementById("workingDaysCount");
+        const noticeDiv = document.getElementById("dayCalculationNotice");
+
+        if (!startInput || !endInput) return;
+
+        const start = new Date(startInput);
+        const end = new Date(endInput);
+
+        if (end < start) {
+            countSpan.innerText = "0 (Invalid Range)";
+            noticeDiv.className = "alert alert-danger py-2 small mb-3";
+            return;
+        }
+
+        let workingDays = 0;
+        let hasBlockedDate = false;
+        let cur = new Date(start);
+
+        while (cur <= end) {
+            const iso = cur.toISOString().split('T')[0];
+            if (blockedDates.includes(iso)) {
+                hasBlockedDate = true;
+            }
+            if (cur.getDay() !== 0) { // 0 = Sunday
+                workingDays++;
+            }
+            cur.setDate(cur.getDate() + 1);
+        }
+if (hasBlockedDate) {
+            countSpan.innerText = "Conflict: Selected range covers already approved/pending leave dates!";
+            noticeDiv.className = "alert alert-danger py-2 small mb-3";
+        } else if (workingDays === 0) {
+            countSpan.innerText = "0 working days (Sundays are weekly offs)";
+            noticeDiv.className = "alert alert-warning py-2 small mb-3";
+        } else {
+            countSpan.innerText = workingDays;
+            noticeDiv.className = "alert alert-info py-2 small mb-3";
+        }
+    }
+
+    document.getElementById("startDate").addEventListener("change", function() {
+        const startVal = this.value;
+        const endEl = document.getElementById("endDate");
+        if (endEl.value < startVal) {
+            endEl.value = startVal;
+        }
+        endEl.min = startVal;
+        updateDayCalculation();
+    });
+
+    document.getElementById("endDate").addEventListener("change", updateDayCalculation);
+    updateDayCalculation();
+</script>
