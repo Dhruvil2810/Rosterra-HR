@@ -1,0 +1,93 @@
+@model List<ROSTERRA_HR.Models.SalaryStructure>
+
+@{
+    ViewBag.Title = "Employee Salary Structures";
+}
+
+<div class="container-fluid px-4 py-3">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center pb-3 mb-4 border-bottom">
+        <div>
+            <h2 class="h3 fw-bold mb-1 text-dark">Employee Salary Structures</h2>
+            <p class="text-muted mb-0 small">Configure basic compensation, monthly allowances, and standard recurring deductions for each active employee.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="@Url.Action("Index", "Payroll")" class="btn btn-outline-primary btn-sm">
+                &#128181; Monthly Payroll
+            </a>
+            <a href="@Url.Action("Index", "Dashboard")" class="btn btn-outline-secondary btn-sm">
+                &larr; Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>&#10004; Success:</strong> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Salary Structures Table -->
+    <div class="card border-0 shadow-sm bg-white">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-muted small text-uppercase">
+                        <tr>
+                            <th>Employee</th>
+                            <th>Department</th>
+                            <th>Basic Salary</th>
+                            <th>Allowances</th>
+                            <th>Gross Monthly</th>
+                            <th>Standard Deductions</th>
+                            <th>Net Estimated</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var s in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="fw-bold text-dark">@s.EmployeeName</div>
+                                        <small class="text-muted">@s.Position</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-dark border">@s.Department</span>
+                                    </td>
+                                    <td>@s.BasicSalary.ToString("C")</td>
+                                    <td>@s.Allowances.ToString("C")</td>
+                                    <td>
+                                        <strong class="text-success">@s.GrossSalary.ToString("C")</strong>
+                                    </td>
+                                    <td>@s.Deductions.ToString("C")</td>
+                                    <td>
+                                        <strong class="text-primary">@s.NetEstimatedSalary.ToString("C")</strong>
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("EditStructure", "Payroll", new { employeeId = s.EmployeeId })" class="btn btn-outline-primary btn-sm">
+                                            Edit Structure
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center py-4 text-muted">
+                                    No active employees found to configure.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -38,6 +38,9 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="@Url.Action("Index", "Leave")">Leaves</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("Index", "Payroll")">Payroll</a>
+                            </li>
                         }
                         else if (Session["Role"] != null && string.Equals(Session["Role"].ToString(), "Employee", StringComparison.OrdinalIgnoreCase))
                         {
@@ -49,6 +52,9 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="@Url.Action("Index", "EmployeeLeave")">Leaves</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("Index", "EmployeePayroll")">Payslips</a>
                             </li>
                         }
                     </ul>

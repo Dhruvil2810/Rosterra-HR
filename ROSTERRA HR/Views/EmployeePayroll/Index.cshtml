@@ -1,0 +1,147 @@
+@model ROSTERRA_HR.Models.EmployeePayrollHistoryViewModel
+
+@{
+    ViewBag.Title = "My Compensation & Payslips";
+}
+
+<div class="container py-3">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center pb-3 mb-4 border-bottom">
+        <div>
+            <h2 class="h3 fw-bold mb-1 text-dark">My Compensation &amp; Payslips</h2>
+            <p class="text-muted mb-0 small">Review your monthly salary history, attendance deductions, and download/print official payslips.</p>
+        </div>
+        <a href="@Url.Action("Index", "EmployeeDashboard")" class="btn btn-outline-secondary btn-sm">
+            &larr; Back to Portal
+        </a>
+    </div>
+
+    <!-- Alert Messages -->
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>&#9888; Notice:</strong> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Salary Structure Overview Card -->
+    @if (Model.SalaryStructure != null)
+    {
+        <div class="card border-0 shadow-sm bg-white mb-4">
+            <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0 text-dark">&#128181; Active Monthly Compensation Package</h5>
+                <span class="badge bg-primary">Standard Structure</span>
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-3 text-center">
+                    <div class="col-md-3">
+                        <div class="p-3 border rounded bg-light">
+                            <small class="text-muted d-block">Basic Salary</small>
+                            <span class="fs-5 fw-bold text-dark">@Model.SalaryStructure.BasicSalary.ToString("C")</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3 border rounded bg-light">
+                            <small class="text-muted d-block">Monthly Allowances</small>
+                            <span class="fs-5 fw-bold text-dark">@Model.SalaryStructure.Allowances.ToString("C")</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3 border rounded bg-light">
+                            <small class="text-muted d-block">Gross Monthly</small>
+                            <span class="fs-5 fw-bold text-success">@Model.SalaryStructure.GrossSalary.ToString("C")</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3 border rounded bg-light">
+                            <small class="text-muted d-block">Standard Deductions</small>
+                            <span class="fs-5 fw-bold text-danger">@Model.SalaryStructure.Deductions.ToString("C")</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Monthly Payslip History Table -->
+    <div class="card border-0 shadow-sm bg-white">
+        <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold mb-0 text-dark">&#128196; Monthly Payslip History</h5>
+            <small class="text-muted">@((Model.PayrollHistory != null) ? Model.PayrollHistory.Count : 0) Statement(s)</small>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-muted small text-uppercase">
+                        <tr>
+                            <th>Pay Period</th>
+                            <th>Working Days</th>
+                            <th>Present</th>
+                            <th>Absent (LOP)</th>
+                            <th>Gross Pay</th>
+                            <th>Deductions &amp; LOP</th>
+                            <th>Net Pay</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.PayrollHistory != null && Model.PayrollHistory.Any())
+                        {
+                            foreach (var p in Model.PayrollHistory)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="fw-bold text-dark">@p.MonthName</div>
+                                        <small class="text-muted">Ref: #@p.PayrollId</small>
+                                    </td>
+                                    <td>@p.TotalWorkingDays days</td>
+                                    <td><span class="text-success fw-semibold">@p.PresentDays days</span></td>
+                                    <td>
+                                        @if (p.AbsentDays > 0)
+                                        {
+                                            <span class="text-danger fw-semibold">@p.AbsentDays day(s) (-@p.LossOfPay.ToString("C"))</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">0 days</span>
+                                        }
+                                    </td>
+                                    <td>@p.GrossSalary.ToString("C")</td>
+                                    <td>@((p.StandardDeductions + p.LossOfPay).ToString("C"))</td>
+                                    <td>
+                                        <strong class="text-primary fs-6">@p.NetSalary.ToString("C")</strong>
+                                    </td>
+                                    <td>
+                                        @if (p.Status == "Paid")
+                                        {
+                                            <span class="badge bg-success">Paid</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning text-dark">Processing</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("Payslip", "EmployeePayroll", new { id = p.PayrollId })" class="btn btn-primary btn-sm" target="_blank">
+                                            &#128196; View Payslip
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="9" class="text-center py-5 text-muted">
+                                    No payslips generated yet. When HR runs your monthly payroll cycle, your statements will appear here.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

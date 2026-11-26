@@ -101,14 +101,14 @@
                     </div>
                 </div>
 
-                <!-- Attendance & Leave Quick Action Cards -->
+                <!-- Attendance, Leave & Payroll Quick Action Cards -->
                 <div class="row g-3 mt-1">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="card shadow-sm border-0 h-100 bg-primary bg-opacity-10 border-primary">
                             <div class="card-body p-3 d-flex flex-column justify-content-between">
                                 <div>
-                                    <h6 class="fw-bold text-primary mb-1">&#9200; Attendance Log</h6>
-                                    <p class="text-secondary small mb-2">Check arrival/departure punches and compliance.</p>
+                                    <h6 class="fw-bold text-primary mb-1">&#9200; Attendance</h6>
+                                    <p class="text-secondary small mb-2">Check arrival/departure punches.</p>
                                 </div>
                                 <a href="@Url.Action("Index", "EmployeeAttendance")" class="btn btn-primary btn-sm">
                                     View Attendance &rarr;
@@ -116,15 +116,28 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="card shadow-sm border-0 h-100 bg-info bg-opacity-10 border-info">
                             <div class="card-body p-3 d-flex flex-column justify-content-between">
                                 <div>
-                                    <h6 class="fw-bold text-info-emphasis mb-1">&#128197; Leave Requests</h6>
-                                    <p class="text-secondary small mb-2">Apply for leaves and check approval statuses.</p>
+                                    <h6 class="fw-bold text-info-emphasis mb-1">&#128197; Leaves</h6>
+                                    <p class="text-secondary small mb-2">Apply for leaves and track status.</p>
                                 </div>
                                 <a href="@Url.Action("Index", "EmployeeLeave")" class="btn btn-info btn-sm text-dark fw-semibold">
-                                    Apply / Track Leaves &rarr;
+                                    Apply Leaves &rarr;
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card shadow-sm border-0 h-100 bg-success bg-opacity-10 border-success">
+                            <div class="card-body p-3 d-flex flex-column justify-content-between">
+                                <div>
+                                    <h6 class="fw-bold text-success mb-1">&#128181; Payslips</h6>
+                                    <p class="text-secondary small mb-2">Review salary statements.</p>
+                                </div>
+                                <a href="@Url.Action("Index", "EmployeePayroll")" class="btn btn-success btn-sm text-white fw-semibold">
+                                    View Payslips &rarr;
                                 </a>
                             </div>
                         </div>

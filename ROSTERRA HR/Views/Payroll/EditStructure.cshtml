@@ -1,0 +1,80 @@
+@model ROSTERRA_HR.Models.SalaryStructure
+
+@{
+    ViewBag.Title = "Edit Salary Structure";
+}
+
+<div class="container py-3" style="max-width: 650px;">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center pb-3 mb-4 border-bottom">
+        <div>
+            <h2 class="h4 fw-bold mb-1 text-dark">Edit Salary Structure</h2>
+            <p class="text-muted mb-0 small">Update base pay, recurring allowances, and deductions for <strong>@Model.EmployeeName</strong>.</p>
+        </div>
+        <a href="@Url.Action("SalaryStructures", "Payroll")" class="btn btn-outline-secondary btn-sm">
+            &larr; Back to List
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm bg-white">
+        <div class="card-body p-4">
+            @using (Html.BeginForm("EditStructure", "Payroll", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(m => m.EmployeeId)
+                @Html.HiddenFor(m => m.EmployeeName)
+                @Html.HiddenFor(m => m.Department)
+                @Html.HiddenFor(m => m.Position)
+
+                @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+
+                <div class="mb-3 p-3 bg-light rounded border">
+                    <div class="row">
+                        <div class="col-6">
+                            <small class="text-muted d-block">Employee Name</small>
+                            <strong>@Model.EmployeeName</strong>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted d-block">Department &bull; Designation</small>
+                            <span>@Model.Department &bull; @Model.Position</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    @Html.LabelFor(m => m.BasicSalary, new { @class = "form-label fw-semibold" })
+                    <div class="input-group">
+                        <span class="input-group-text">&#8377;</span>
+                        @Html.TextBoxFor(m => m.BasicSalary, "{0:F2}", new { @class = "form-control", type = "number", step = "0.01", min = "0", required = "required" })
+                    </div>
+                    @Html.ValidationMessageFor(m => m.BasicSalary, "", new { @class = "text-danger small" })
+                </div>
+
+                <div class="mb-3">
+                    @Html.LabelFor(m => m.Allowances, new { @class = "form-label fw-semibold" })
+                    <div class="input-group">
+                        <span class="input-group-text">&#8377;</span>
+                        @Html.TextBoxFor(m => m.Allowances, "{0:F2}", new { @class = "form-control", type = "number", step = "0.01", min = "0", required = "required" })
+                    </div>
+                    <small class="text-muted">Includes HRA, travel, and performance allowances.</small>
+                    @Html.ValidationMessageFor(m => m.Allowances, "", new { @class = "text-danger small" })
+                </div>
+
+                <div class="mb-4">
+                    @Html.LabelFor(m => m.Deductions, new { @class = "form-label fw-semibold" })
+                    <div class="input-group">
+                        <span class="input-group-text">&#8377;</span>
+                        @Html.TextBoxFor(m => m.Deductions, "{0:F2}", new { @class = "form-control", type = "number", step = "0.01", min = "0", required = "required" })
+                    </div>
+                    <small class="text-muted">Fixed monthly statutory deductions (tax, insurance, PF).</small>
+                    @Html.ValidationMessageFor(m => m.Deductions, "", new { @class = "text-danger small" })
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="@Url.Action("SalaryStructures", "Payroll")" class="btn btn-secondary btn-sm">Cancel</a>
+                    <button type="submit" class="btn btn-primary btn-sm px-3">Save Salary Structure</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>

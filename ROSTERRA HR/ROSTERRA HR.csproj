@@ -101,8 +101,10 @@
     <Compile Include="Controllers\EmployeeController.cs" />
     <Compile Include="Controllers\EmployeeDashboardController.cs" />
     <Compile Include="Controllers\EmployeeLeaveController.cs" />
+    <Compile Include="Controllers\EmployeePayrollController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LeaveController.cs" />
+    <Compile Include="Controllers\PayrollController.cs" />
     <Compile Include="Controllers\ShiftController.cs" />
     <Compile Include="Data\ConnectionFactory.cs" />
     <Compile Include="Filters\AuthorizeEmployeeAttribute.cs" />
@@ -118,10 +120,14 @@
     <Compile Include="Models\EmployeeCreateViewModel.cs" />
     <Compile Include="Models\EmployeeEditViewModel.cs" />
     <Compile Include="Models\EmployeeLeaveListViewModel.cs" />
+    <Compile Include="Models\EmployeePayrollHistoryViewModel.cs" />
+    <Compile Include="Models\HRPayrollIndexViewModel.cs" />
     <Compile Include="Models\HRLeaveManageViewModel.cs" />
     <Compile Include="Models\Leave.cs" />
     <Compile Include="Models\LeaveApplicationViewModel.cs" />
     <Compile Include="Models\LoginViewModel.cs" />
+    <Compile Include="Models\Payroll.cs" />
+    <Compile Include="Models\SalaryStructure.cs" />
     <Compile Include="Models\Shift.cs" />
     <Compile Include="Models\ShiftAssignViewModel.cs" />
     <Compile Include="Models\ShiftViewModel.cs" />
@@ -130,6 +136,7 @@
     <Compile Include="Repositories\AttendanceRepository.cs" />
     <Compile Include="Repositories\EmployeeRepository.cs" />
     <Compile Include="Repositories\LeaveRepository.cs" />
+    <Compile Include="Repositories\PayrollRepository.cs" />
     <Compile Include="Repositories\ShiftRepository.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
     <Compile Include="Security\PasswordHasher.cs" />
@@ -155,6 +162,12 @@
     <Content Include="Views\EmployeeAttendance\Index.cshtml" />
     <Content Include="Views\Leave\Index.cshtml" />
     <Content Include="Views\EmployeeLeave\Index.cshtml" />
+    <Content Include="Views\Payroll\Index.cshtml" />
+    <Content Include="Views\Payroll\SalaryStructures.cshtml" />
+    <Content Include="Views\Payroll\EditStructure.cshtml" />
+    <Content Include="Views\Payroll\Payslip.cshtml" />
+    <Content Include="Views\EmployeePayroll\Index.cshtml" />
+    <Content Include="Views\EmployeePayroll\Payslip.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
