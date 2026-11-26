@@ -28,5 +28,8 @@ node_modules/
 *.tmp
 _local/
 .artifacts/
+VIVA_PREP_HR_MODULE.md
+VIVA_PREP_EMPLOYEE_MODULE.md
+
 
 
