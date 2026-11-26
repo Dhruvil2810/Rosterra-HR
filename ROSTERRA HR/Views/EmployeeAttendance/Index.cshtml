@@ -4,16 +4,21 @@
     ViewBag.Title = "My Attendance Log";
 }
 
-<div class="container py-2">
+<div class="container py-3">
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center pb-3 mb-4 border-bottom">
         <div>
             <h2 class="h3 fw-bold mb-1 text-dark">My Shift &amp; Attendance Log</h2>
-            <p class="text-muted mb-0 small">Review your assigned workplace shift timings and chronological punch-in/out records.</p>
+            <p class="text-muted mb-0 small">Review your assigned shift timings, daily punch records, and full historical attendance log.</p>
         </div>
-        <a href="@Url.Action("Index", "EmployeeDashboard")" class="btn btn-outline-secondary btn-sm">
-            &larr; Back to Portal
-        </a>
+        <div class="d-flex gap-2">
+            <a href="@Url.Action("Index", "EmployeeLeave")" class="btn btn-outline-primary btn-sm">
+                &#128197; Leave Requests
+            </a>
+            <a href="@Url.Action("Index", "EmployeeDashboard")" class="btn btn-outline-secondary btn-sm">
+                &larr; Back to Portal
+            </a>
+        </div>
     </div>
 
     <!-- Shift & Today Overview Cards -->
@@ -22,7 +27,7 @@
         <div class="col-md-5">
             <div class="card shadow-sm border-0 h-100 bg-white">
                 <div class="card-body p-4">
-<div class="d-flex align-items-center mb-3">
+                    <div class="d-flex align-items-center mb-3">
                         <span class="fs-2 text-primary me-3">&#9200;</span>
                         <div>
                             <h5 class="fw-bold mb-0 text-dark">Assigned Shift</h5>
@@ -69,8 +74,7 @@
                                 </div>
                             </div>
                         </div>
-
-                        <div class="d-flex align-items-center justify-content-between p-3 rounded @(string.Equals(Model.TodayAttendance.Status, "Present", StringComparison.OrdinalIgnoreCase) ? "bg-success bg-opacity-10 text-success" : (string.Equals(Model.TodayAttendance.Status, "Late", StringComparison.OrdinalIgnoreCase) ? "bg-warning bg-opacity-10 text-warning-emphasis" : "bg-danger bg-opacity-10 text-danger"))">
+<div class="d-flex align-items-center justify-content-between p-3 rounded @(string.Equals(Model.TodayAttendance.Status, "Present", StringComparison.OrdinalIgnoreCase) ? "bg-success bg-opacity-10 text-success" : (string.Equals(Model.TodayAttendance.Status, "Late", StringComparison.OrdinalIgnoreCase) ? "bg-warning bg-opacity-10 text-warning-emphasis" : "bg-danger bg-opacity-10 text-danger"))">
                             <div>
                                 <strong>Status:</strong> @Model.TodayAttendance.Status
                                 <div class="small">@Model.TodayAttendance.Remarks</div>
@@ -85,6 +89,117 @@
                         </div>
                     }
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Date-Wise Attendance History Log -->
+    <div class="card border-0 shadow-sm bg-white">
+        <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="fw-bold mb-0 text-dark">Date-Wise Attendance History</h5>
+                <small class="text-muted">Chronological audit log of your workplace arrival, departure, and shift compliance</small>
+            </div>
+            <span class="badge bg-secondary">@((Model.History != null) ? Model.History.Count : 0) Record(s)</span>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-muted small text-uppercase">
+                        <tr>
+                            <th>Date</th>
+                            <th>Shift Timings</th>
+                            <th>Punch In</th>
+                            <th>Punch Out</th>
+                            <th>Total Worked</th>
+                            <th>Status</th>
+                            <th>HR Compliance Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.History != null && Model.History.Any())
+                        {
+                            foreach (var item in Model.History)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="fw-bold text-dark">@item.AttendanceDate.ToString("ddd, MMM dd, yyyy")</div>
+                                        @if (item.AttendanceDate.DayOfWeek == DayOfWeek.Sunday)
+                                        {
+                                            <span class="badge bg-secondary" style="font-size: 0.7rem;">Sunday Off</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-dark border">
+                                            @item.FormattedShiftTiming
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if (item.PunchInTime.HasValue)
+                                        {
+                                            <span class="fw-semibold text-primary">@item.FormattedPunchIn</span>
+                                        }
+                                        else
+{
+                                            <span class="text-muted">--</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (item.PunchOutTime.HasValue)
+                                        {
+                                            <span class="fw-semibold text-primary">@item.FormattedPunchOut</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">--</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (item.TotalHours.HasValue)
+                                        {
+                                            <span class="fw-bold text-dark">@item.TotalHours.Value.ToString("0.##") hrs</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">--</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (string.Equals(item.Status, "Present", StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            <span class="badge bg-success">Present</span>
+                                        }
+                                        else if (string.Equals(item.Status, "Late", StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            <span class="badge bg-warning text-dark">Late</span>
+                                        }
+                                        else if (string.Equals(item.Status, "Absent", StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            <span class="badge bg-danger">Absent</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Pending</span>
+                                        }
+                                    </td>
+                                    <td style="max-width: 280px;">
+                                        <span class="small text-muted d-inline-block text-truncate" style="max-width: 270px;" title="@item.Remarks">
+                                            @(string.IsNullOrEmpty(item.Remarks) ? "--" : item.Remarks)
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center py-4 text-muted">
+                                    No attendance records found yet.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
