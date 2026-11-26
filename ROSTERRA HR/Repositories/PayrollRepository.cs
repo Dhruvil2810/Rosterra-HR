@@ -37,9 +37,12 @@ namespace ROSTERRA_HR.Repositories
         public SalaryStructure GetSalaryStructure(int employeeId)
         {
             const string sql = @"
-                SELECT s.SalaryStructureId, s.EmployeeId, s.BasicSalary, s.Allowances, s.Deductions,
-                       s.CreatedAtUtc, s.UpdatedAtUtc,
-                       e.FirstName + ' ' + e.LastName AS EmployeeName, e.Department, e.Position
+                SELECT e.EmployeeId, e.FirstName + ' ' + e.LastName AS EmployeeName, e.Department, e.Position,
+                       ISNULL(s.SalaryStructureId, 0) AS SalaryStructureId,
+                       ISNULL(s.BasicSalary, 30000.00) AS BasicSalary,
+                       ISNULL(s.Allowances, 5000.00) AS Allowances,
+                       ISNULL(s.Deductions, 1000.00) AS Deductions,
+                       s.CreatedAtUtc, s.UpdatedAtUtc
                 FROM dbo.Employees e
                 LEFT JOIN dbo.SalaryStructures s ON e.EmployeeId = s.EmployeeId
                 WHERE e.EmployeeId = @EmployeeId;";
@@ -54,14 +57,14 @@ namespace ROSTERRA_HR.Repositories
                     {
                         return new SalaryStructure
                         {
-                            SalaryStructureId = reader.IsDBNull(reader.GetOrdinal("SalaryStructureId")) ? 0 : reader.GetInt32(reader.GetOrdinal("SalaryStructureId")),
+                            SalaryStructureId = reader.GetInt32(reader.GetOrdinal("SalaryStructureId")),
                             EmployeeId = reader.GetInt32(reader.GetOrdinal("EmployeeId")),
                             EmployeeName = reader.GetString(reader.GetOrdinal("EmployeeName")),
                             Department = reader.GetString(reader.GetOrdinal("Department")),
                             Position = reader.GetString(reader.GetOrdinal("Position")),
-                            BasicSalary = reader.IsDBNull(reader.GetOrdinal("BasicSalary")) ? 30000.00m : reader.GetDecimal(reader.GetOrdinal("BasicSalary")),
-                            Allowances = reader.IsDBNull(reader.GetOrdinal("Allowances")) ? 5000.00m : reader.GetDecimal(reader.GetOrdinal("Allowances")),
-                            Deductions = reader.IsDBNull(reader.GetOrdinal("Deductions")) ? 1000.00m : reader.GetDecimal(reader.GetOrdinal("Deductions")),
+                            BasicSalary = reader.GetDecimal(reader.GetOrdinal("BasicSalary")),
+                            Allowances = reader.GetDecimal(reader.GetOrdinal("Allowances")),
+                            Deductions = reader.GetDecimal(reader.GetOrdinal("Deductions")),
                             CreatedAtUtc = reader.IsDBNull(reader.GetOrdinal("CreatedAtUtc")) ? DateTime.UtcNow : reader.GetDateTime(reader.GetOrdinal("CreatedAtUtc")),
                             UpdatedAtUtc = reader.IsDBNull(reader.GetOrdinal("UpdatedAtUtc")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("UpdatedAtUtc"))
                         };
