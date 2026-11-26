@@ -300,30 +300,55 @@ namespace ROSTERRA_HR.Repositories
         /// </summary>
         public void PunchOut(int employeeId, DateTime punchOutTime, int markedByUserId, string customRemarks = null)
         {
+            // Find the active punch-in attendance record:
+            // For standard shifts: on the same date (punchOutTime.Date).
+            // For overnight shifts (e.g. 10 PM to 6 AM): the punch-in occurred yesterday.
             DateTime date = punchOutTime.Date;
             var attendance = GetAttendance(employeeId, date);
 
             if (attendance == null || !attendance.PunchInTime.HasValue)
             {
-                throw new InvalidOperationException("Cannot record Punch-Out without an existing Punch-In for this date.");
+                // Check if there was an open overnight punch-in from yesterday
+                var yesterdayAttendance = GetAttendance(employeeId, date.AddDays(-1));
+                if (yesterdayAttendance != null && yesterdayAttendance.PunchInTime.HasValue && !yesterdayAttendance.PunchOutTime.HasValue)
+                {
+                    attendance = yesterdayAttendance;
+                }
+            }
+
+            if (attendance == null || !attendance.PunchInTime.HasValue)
+            {
+                throw new InvalidOperationException("Cannot record Punch-Out without an existing Punch-In for this shift.");
             }
 
             // Compute total worked hours
             TimeSpan duration = punchOutTime - attendance.PunchInTime.Value;
             decimal totalHours = Math.Max(0, Math.Round((decimal)duration.TotalHours, 2));
 
-            // Check if employee met scheduled shift end
-            string outNote;
-            if (punchOutTime.TimeOfDay >= attendance.ShiftEndTimeSnapshot)
+            // Check if employee met scheduled shift end (accounting for overnight shift end times)
+            DateTime scheduledEnd;
+            if (attendance.ShiftEndTimeSnapshot < attendance.ShiftStartTimeSnapshot)
             {
-                int overMinutes = (int)(punchOutTime.TimeOfDay - attendance.ShiftEndTimeSnapshot).TotalMinutes;
+                // Overnight shift: ends on the following morning
+                scheduledEnd = attendance.PunchInTime.Value.Date.AddDays(1).Add(attendance.ShiftEndTimeSnapshot);
+            }
+            else
+            {
+                // Same-day shift
+                scheduledEnd = attendance.PunchInTime.Value.Date.Add(attendance.ShiftEndTimeSnapshot);
+            }
+
+            string outNote;
+            if (punchOutTime >= scheduledEnd)
+            {
+                int overMinutes = (int)(punchOutTime - scheduledEnd).TotalMinutes;
                 outNote = overMinutes > 0
                     ? $"Punched out at {punchOutTime:hh:mm tt} ({overMinutes} mins post-shift). Total: {totalHours} hrs."
                     : $"Completed full shift. Punched out at {punchOutTime:hh:mm tt}. Total: {totalHours} hrs.";
             }
             else
             {
-                int earlyMins = (int)(attendance.ShiftEndTimeSnapshot - punchOutTime.TimeOfDay).TotalMinutes;
+                int earlyMins = (int)(scheduledEnd - punchOutTime).TotalMinutes;
                 outNote = $"Early departure ({earlyMins} mins before shift end). Punched out at {punchOutTime:hh:mm tt}. Total: {totalHours} hrs.";
             }
 
